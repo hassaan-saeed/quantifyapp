@@ -21,6 +21,8 @@ class _AddNewSubAccState extends State<AddNewSubAcc> {
 
   void showInSnackBar(String value) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.redAccent,
+        duration: const Duration(seconds: 5),
         content: Text(value)
     ));
   }
@@ -46,6 +48,8 @@ class _AddNewSubAccState extends State<AddNewSubAcc> {
   createSubAcc() async {
     try {
       register(_email, _pass);
+      showInSnackBar("Sub-Account Created");
+      Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         showInSnackBar('The password provided is too weak.');

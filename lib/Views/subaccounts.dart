@@ -14,6 +14,15 @@ class SubAccounts extends StatefulWidget {
 class _SubAccountsState extends State<SubAccounts> {
   AsyncSnapshot<QuerySnapshot> snapshot = const AsyncSnapshot.nothing();
   List<dynamic> subsList = [];
+  late TextEditingController _controller;
+
+  void showInSnackBar(String value) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      backgroundColor: Colors.redAccent,
+      duration: const Duration(seconds: 5),
+        content: Text(value)
+    ));
+  }
 
   Future<String> getSubs() async {
     await FirebaseFirestore.instance
@@ -33,43 +42,71 @@ class _SubAccountsState extends State<SubAccounts> {
   }
 
   deleteSub(String email, String password) async {
+    print("bbb");
     FirebaseApp app = await Firebase.initializeApp(name: 'Secondary', options: Firebase.app().options);
-    late UserCredential userCredential;
     try {
-      AuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
-      userCredential = await FirebaseAuth.instanceFor(app: app).signInWithCredential(credential);
+      print("ccc");
+      print(email);
+      print(password);
+      UserCredential userCredential = await FirebaseAuth.instanceFor(app: app).signInWithEmailAndPassword(email: email, password: password);
+      print("ddd");
       await FirebaseAuth.instanceFor(app: app).currentUser?.delete();
+      await FirebaseFirestore.instance.collection("subaccounts").doc(userCredential.user?.uid).delete().then((value) => showInSnackBar("Sub-Account Deleted")).catchError((error) => print("Failed to delete user: $error"));
+      print("aaa");
     } on FirebaseAuthException catch (e) {
       if (e.code == 'requires-recent-login') {
-        print('The user must reauthenticate before this operation can be executed.');
+        showInSnackBar('The user must reauthenticate before this operation can be executed.');
+      }
+      else if (e.code == 'user-not-found') {
+        showInSnackBar('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        showInSnackBar('Wrong password provided for that user.');
+      }
+      else{
+        print(e);
       }
     }
     await app.delete();
+    Navigator.pop(context);
   }
 
   createDialog(String emailIn) {
     String email = emailIn;
-    String pass = "";
+    String _tpass = "";
 
     return showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
               title: const Text("Delete?"),
-              content: TextFormField(
-                keyboardType: TextInputType.visiblePassword,
+              content: TextField(
+                controller: _controller,
                 obscureText: true,
                 decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
                   labelText: 'Enter Sub-Account\'s Password',
-                  prefixIcon: Icon(Icons.lock),
                 ),
                 onChanged: (text) {
-                  pass = text;
-                },
+                      _tpass = text;
+                      },
+                // onSubmitted: (String value){
+                //   _tpass = value;
+                // },
               ),
+              // content: TextFormField(
+              //   keyboardType: TextInputType.visiblePassword,
+              //   obscureText: true,
+              //   decoration: const InputDecoration(
+              //     labelText: 'Enter Sub-Account\'s Password',
+              //     prefixIcon: Icon(Icons.lock),
+              //   ),
+              //   onChanged: (text) {
+              //     _tpass = text;
+              //   },
+              // ),
               // content: Text("Do you want to delete this account?"),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(context, 'No'), child: Text("No")),
-                TextButton(onPressed: () => {deleteSub(email, pass)}, child: Text("Yes")),
+                TextButton(onPressed: () => Navigator.pop(context, 'No'), child: const Text("No")),
+                TextButton(onPressed: () => {deleteSub(email, _tpass)}, child: const Text("Yes")),
               ],
             ));
   }
@@ -80,7 +117,15 @@ class _SubAccountsState extends State<SubAccounts> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    _controller = TextEditingController();
     // getSubs();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _controller.dispose();
+    super.dispose();
   }
 
   @override

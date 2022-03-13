@@ -29,6 +29,8 @@ class _EditProfileState extends State<EditProfile> {
 
   void showInSnackBar(String value) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.redAccent,
+        duration: const Duration(seconds: 5),
         content: Text(value)
     ));
   }
