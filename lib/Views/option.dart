@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:tflite/tflite.dart';
 
 late File _image;
 String result = '';
@@ -23,7 +22,7 @@ class _OptionState extends State<Option> {
   @override
   void initState() {
     super.initState();
-    _image = File('images/image.png');
+    _image = new File('images/image.png');
     // loadModelFiles();
 
   }
@@ -90,7 +89,17 @@ class _OptionState extends State<Option> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Image.file(_image),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Card(
+                  color: Colors.transparent,
+                  child: Container(child: Image.file(_image, fit: BoxFit.contain,), height: 450,),
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)
+                  ),
+                ),
+              ),
               ElevatedButton(
                 onPressed: ()=>{chooseImageFromLibrary()},
                 child: Container(

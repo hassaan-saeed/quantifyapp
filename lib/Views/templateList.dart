@@ -69,6 +69,7 @@ class _TemplateListState extends State<TemplateList> {
 
   _onSelected(String index) {
     setState(() => _selectedIndex = index);
+    widget.onChanged(_selectedIndex!);
   }
 
 

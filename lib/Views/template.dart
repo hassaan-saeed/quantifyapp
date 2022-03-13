@@ -74,28 +74,44 @@ class _TemplateState extends State<Template> {
           body: TabBarView(
             children: [
               TemplateList(cat: "Wood", onChanged: (value) {
-                selectedValue = value;
+                setState(() {
+                  selectedValue = value;
+                });
               }),
               TemplateList(cat: "Beams",onChanged: (value) {
-                selectedValue = value;
+                setState(() {
+                  selectedValue = value;
+                });
               }),
               TemplateList(cat: "Tubes",onChanged: (value) {
-                selectedValue = value;
+                setState(() {
+                  selectedValue = value;
+                });
               }),
               TemplateList(cat: "Bottles",onChanged: (value) {
-                selectedValue = value;
+                setState(() {
+                  selectedValue = value;
+                });
               }),
               TemplateList(cat: "Layers",onChanged: (value) {
-                selectedValue = value;
+                setState(() {
+                  selectedValue = value;
+                });
               }),
               TemplateList(cat: "Metals",onChanged: (value) {
-                selectedValue = value;
+                setState(() {
+                  selectedValue = value;
+                });
               }),
               TemplateList(cat: "Pharma",onChanged: (value) {
-                selectedValue = value;
+                setState(() {
+                  selectedValue = value;
+                });
               }),
               TemplateList(cat: "Misc",onChanged: (value) {
-                selectedValue = value;
+                setState(() {
+                  selectedValue = value;
+                });
               })
             ],
           ),
