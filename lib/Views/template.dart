@@ -13,6 +13,8 @@ class Template extends StatefulWidget {
 
 class _TemplateState extends State<Template> {
 
+  String? selectedValue;
+
   @override
   void initState() {
     super.initState();
@@ -40,10 +42,13 @@ class _TemplateState extends State<Template> {
           //     )
           //   ],
           // ),
-          floatingActionButton: FloatingActionButton.extended(
-            onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => Option())),
-            label: Text("Next"),
+          floatingActionButton: Visibility(
+            visible: selectedValue!=null,
+            child: FloatingActionButton.extended(
+              onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => Option())),
+              label: Text("Next"),
 
+            ),
           ),
           appBar: AppBar(
             automaticallyImplyLeading: false,
@@ -66,16 +71,32 @@ class _TemplateState extends State<Template> {
             ),
             title: const Text('Select a Template:', style: TextStyle(color: Colors.black87),),
           ),
-          body: const TabBarView(
+          body: TabBarView(
             children: [
-              TemplateList(cat: "Wood",),
-              TemplateList(cat: "Beams",),
-              TemplateList(cat: "Tubes",),
-              TemplateList(cat: "Bottles",),
-              TemplateList(cat: "Layers",),
-              TemplateList(cat: "Metals",),
-              TemplateList(cat: "Pharma",),
-              TemplateList(cat: "Misc",)
+              TemplateList(cat: "Wood", onChanged: (value) {
+                selectedValue = value;
+              }),
+              TemplateList(cat: "Beams",onChanged: (value) {
+                selectedValue = value;
+              }),
+              TemplateList(cat: "Tubes",onChanged: (value) {
+                selectedValue = value;
+              }),
+              TemplateList(cat: "Bottles",onChanged: (value) {
+                selectedValue = value;
+              }),
+              TemplateList(cat: "Layers",onChanged: (value) {
+                selectedValue = value;
+              }),
+              TemplateList(cat: "Metals",onChanged: (value) {
+                selectedValue = value;
+              }),
+              TemplateList(cat: "Pharma",onChanged: (value) {
+                selectedValue = value;
+              }),
+              TemplateList(cat: "Misc",onChanged: (value) {
+                selectedValue = value;
+              })
             ],
           ),
         ),

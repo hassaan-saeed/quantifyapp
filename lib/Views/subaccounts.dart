@@ -42,20 +42,24 @@ class _SubAccountsState extends State<SubAccounts> {
   }
 
   deleteSub(String email, String password) async {
-    print("bbb");
+    // print("bbb");
     FirebaseApp app = await Firebase.initializeApp(name: 'Secondary', options: Firebase.app().options);
+
     try {
-      print("ccc");
-      print(email);
-      print(password);
+      // print("ccc");
+      // print(email);
+      // print(password);
       UserCredential userCredential = await FirebaseAuth.instanceFor(app: app).signInWithEmailAndPassword(email: email, password: password);
-      print("ddd");
+      // print("ddd");
       await FirebaseAuth.instanceFor(app: app).currentUser?.delete();
       await FirebaseFirestore.instance.collection("subaccounts").doc(userCredential.user?.uid).delete().then((value) => showInSnackBar("Sub-Account Deleted")).catchError((error) => print("Failed to delete user: $error"));
-      print("aaa");
+      // print("aaa");
     } on FirebaseAuthException catch (e) {
+      if(password==""){
+        showInSnackBar("Empty Password");
+      }
       if (e.code == 'requires-recent-login') {
-        showInSnackBar('The user must reauthenticate before this operation can be executed.');
+        showInSnackBar('The user must re-authenticate before this operation can be executed.');
       }
       else if (e.code == 'user-not-found') {
         showInSnackBar('No user found for that email.');

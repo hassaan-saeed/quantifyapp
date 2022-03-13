@@ -4,9 +4,10 @@ import 'package:auto_size_text/auto_size_text.dart';
 
 
 class TemplateList extends StatefulWidget {
-  const TemplateList({Key? key, this.cat}) : super(key: key);
+  const TemplateList({Key? key, this.cat, required this.onChanged}) : super(key: key);
 
   final String? cat;
+  final ValueChanged<String> onChanged;
 
   @override
   _TemplateListState createState() => _TemplateListState();
