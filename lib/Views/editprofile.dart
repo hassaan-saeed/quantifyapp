@@ -34,6 +34,7 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   save() async {
+    // if(FirebaseAuth.instance.currentUser.)
     await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).set(
         {
           "name" : name,

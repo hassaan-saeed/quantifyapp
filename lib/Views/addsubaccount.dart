@@ -25,11 +25,18 @@ class _AddNewSubAccState extends State<AddNewSubAcc> {
     ));
   }
 
-  static Future<UserCredential> register(String email, String password) async {
+  Future<UserCredential> register(String email, String password) async {
     FirebaseApp app = await Firebase.initializeApp(name: 'Secondary', options: Firebase.app().options);
     late UserCredential userCredential;
     try {
       userCredential = await FirebaseAuth.instanceFor(app: app).createUserWithEmailAndPassword(email: email, password: password);
+      await FirebaseFirestore.instance.collection('subaccounts').doc(userCredential.user?.uid).set(
+          {
+            "email" : _email,
+            "name" : _name,
+            "manager" : FirebaseAuth.instance.currentUser?.uid,
+            "type" : "subaccount"
+          });
     }
     on FirebaseAuthException catch (e) {print(e);}
     await app.delete();
@@ -39,12 +46,6 @@ class _AddNewSubAccState extends State<AddNewSubAcc> {
   createSubAcc() async {
     try {
       register(_email, _pass);
-      await firestore.collection('subaccounts').doc().set(
-          {
-            "email" : _email,
-            "name" : _name,
-            "manager" : FirebaseAuth.instance.currentUser?.uid
-          });
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         showInSnackBar('The password provided is too weak.');
