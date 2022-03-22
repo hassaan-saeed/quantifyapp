@@ -108,6 +108,10 @@ flutter:
     - images/Pharma/Boxes.jpg
     - images/image.png
     - assets/
+    - images/login.png
+    - images/signup.png
+    - images/logindark.png
+    - images/signupdark.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

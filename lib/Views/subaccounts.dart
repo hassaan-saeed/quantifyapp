@@ -134,6 +134,8 @@ class _SubAccountsState extends State<SubAccounts> {
 
   @override
   Widget build(BuildContext context) {
+    var brightness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -148,12 +150,16 @@ class _SubAccountsState extends State<SubAccounts> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
             return Container(
+              color: isDarkMode?Colors.black54:Colors.grey.shade300,
               alignment: Alignment.topCenter,
               padding: const EdgeInsets.only(top: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20))),
                     onPressed: () => {
                       Navigator.push(
                           context,

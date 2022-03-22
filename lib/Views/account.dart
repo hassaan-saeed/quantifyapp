@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:quantify/Views/editprofile.dart';
@@ -88,6 +89,9 @@ class _AccountInfoState extends State<AccountInfo> {
 
   @override
   Widget build(BuildContext context) {
+
+    var brightness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brightness == Brightness.dark;
     return FutureBuilder(
         future: getData(),
         builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
@@ -96,7 +100,38 @@ class _AccountInfoState extends State<AccountInfo> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
+            if( currentUser?.isAnonymous == true){
+              return Container(
+                width: MediaQuery.of(context).size.width,
+                color: isDarkMode?Colors.black54:Colors.white,
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    const Text("Guest User Access", style: TextStyle(fontSize: 28),),
+                    const SizedBox(height: 110,),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20))),
+                      onPressed: () => {signOut()},
+                      child: const Padding(
+                        padding:
+                        EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+                        child: Text(
+                          "Signout",
+                          style: TextStyle(
+                            fontSize: 24,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
             return Container(
+              color: isDarkMode?Colors.black54:Colors.white,
               padding: const EdgeInsets.all(10),
               child: Column(
                 children: [
@@ -104,9 +139,9 @@ class _AccountInfoState extends State<AccountInfo> {
                     padding: const EdgeInsets.all(20.0),
                     child: Row(
                       children: [
-                        const CircleAvatar(
+                        CircleAvatar(
                           radius: 65,
-                          backgroundColor: Colors.black54,
+                          backgroundColor: isDarkMode?Colors.amberAccent:Colors.lightBlueAccent,
                           child: CircleAvatar(
                             radius: 60,
                             backgroundImage: AssetImage("images/image.png"),
@@ -122,7 +157,7 @@ class _AccountInfoState extends State<AccountInfo> {
                                 style: TextStyle(
                                     fontSize: 28,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.black87),
+                                ),
                               ),
                               SizedBox(
                                 height: 16,
@@ -132,14 +167,14 @@ class _AccountInfoState extends State<AccountInfo> {
                                 style: TextStyle(
                                     fontSize: 22,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.black87),
+                                ),
                               ),
                               Text(
                                 _email,
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.black87),
+                                ),
                               ),
                             ],
                           ),
@@ -153,63 +188,170 @@ class _AccountInfoState extends State<AccountInfo> {
                   // if(_type == "Individual" || _type == "Business"){
                   //   return
                   // }
-                  Visibility(
-                    visible: _type == "Individual" || _type == "Business",
-                    child: ElevatedButton(
-                      onPressed: () => {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const EditProfile()))
-                      },
-                      child: const Padding(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 40),
-                        child: Text(
-                          "Edit Profile",
-                          style: TextStyle(
-                            fontSize: 24,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Visibility(
+                        visible: _type == "Individual" || _type == "Business",
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width*0.4,
+                          height: MediaQuery.of(context).size.height*0.15,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                primary: Colors.indigo.shade300,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20))),
+                            onPressed: () => {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const EditProfile()))
+                            },
+                            child: Padding(
+                              padding:
+                                  EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Icon(Icons.edit, size: 50,),
+                                  Text(
+                                    "Edit Profile",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                      Visibility(
+                        visible: _type == "Business",
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width*0.4,
+                          height: MediaQuery.of(context).size.height*0.15,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                primary: Colors.blue.shade400,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20))),
+                            onPressed: () => {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const SubAccounts()))
+                            },
+                            child: Padding(
+                              padding:
+                              EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Icon(Icons.people, size: 50,),
+                                  Text(
+                                    "Manage SubAccounts",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(
                     height: 20,
                   ),
-                  Visibility(
-                    visible: _type == "Business",
-                    child: ElevatedButton(
-                      onPressed: () => {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const SubAccounts()))
-                      },
-                      child: const Padding(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 40),
-                        child: Text(
-                          "Manage Sub-Accounts",
-                          style: TextStyle(
-                            fontSize: 24,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Visibility(
+                        visible: _type == "Individual" || _type == "Business",
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width*0.4,
+                          height: MediaQuery.of(context).size.height*0.15,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                primary: Colors.lightBlue.shade700,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20))),
+                            onPressed: () => {},
+                            child: Padding(
+                              padding:
+                              EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Icon(Icons.add_card, size: 50,),
+                                  Text(
+                                    "Update Card",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                      Visibility(
+                        visible: _type == "Individual" || _type == "Business",
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width*0.4,
+                          height: MediaQuery.of(context).size.height*0.15,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.teal.shade300,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20))),
+                            onPressed: () => {},
+                            child: Padding(
+                              padding:
+                              EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Icon(Icons.attach_money, size: 50,),
+                                  Text(
+                                    "Manage Subscribtion",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(
                     height: 20,
                   ),
-                  ElevatedButton(
-                    onPressed: () => {signOut()},
-                    child: const Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 40),
-                      child: Text(
-                        "Signout",
-                        style: TextStyle(
-                          fontSize: 24,
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width*0.85,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.redAccent,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20))),
+                      onPressed: () => {signOut()},
+                      child: const Padding(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+                        child: Text(
+                          "Signout",
+                          style: TextStyle(
+                            fontSize: 24,
+                          ),
                         ),
                       ),
                     ),

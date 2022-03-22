@@ -23,6 +23,8 @@ class _TemplateState extends State<Template> {
 
   @override
   Widget build(BuildContext context) {
+    var brightness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brightness == Brightness.dark;
 
     return Container(
       child: DefaultTabController(
@@ -52,13 +54,13 @@ class _TemplateState extends State<Template> {
           ),
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            backgroundColor: Colors.white,
+            // backgroundColor: Colors.white,
             elevation: 0,
-            bottom: const TabBar(
+            bottom: TabBar(
               isScrollable: true,
-              labelColor: Colors.black54,
-              indicatorColor: Colors.black54,
-              tabs: [
+              labelColor: isDarkMode?Colors.white:Colors.black54,
+              indicatorColor: isDarkMode?Colors.white:Colors.black54,
+              tabs: const [
                 Tab( text: "Wood", ),
                 Tab(text: "Beams",),
                 Tab(text: "Tubes",),
@@ -69,7 +71,7 @@ class _TemplateState extends State<Template> {
                 Tab(text: "Misc",)
               ],
             ),
-            title: const Text('Select a Template:', style: TextStyle(color: Colors.black87),),
+            title: const Text('Select a Template:'),
           ),
           body: TabBarView(
             children: [

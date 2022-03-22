@@ -44,26 +44,27 @@ class _HomeState extends State<Home> {
         children: _widgetOptions,
       ),
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.green,
-        selectedItemColor: Colors.black38,
+        // backgroundColor: Colors.green,
+        // selectedItemColor: Colors.black38,
         onTap: _onItemTapped,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_box, color: Colors.black54,),
+            icon: Icon(Icons.account_box),
             label: 'Account',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.camera_alt, color: Colors.black54),
+            icon: Icon(Icons.camera_alt),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.assignment_rounded, color: Colors.black54),
+            icon: Icon(Icons.assignment_rounded),
             label: 'Files',
 
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.analytics, color: Colors.black54),
+            icon: Icon(Icons.analytics),
             label: 'Reports',
           ),
         ],

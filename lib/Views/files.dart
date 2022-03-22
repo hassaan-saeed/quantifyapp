@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quantify/Views/saveResult.dart';
 
 class Files extends StatefulWidget {
   const Files({Key? key}) : super(key: key);
@@ -26,20 +27,27 @@ class _FilesState extends State<Files> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      child: Scrollbar(
-        child: ListView.builder(
-            itemCount: data.length,
-            itemBuilder: (BuildContext context,int index){
-              return ListTile(
-                  leading: Icon(Icons.analytics_outlined),
-                  title: Text(data[index].filename,
-                    style: const TextStyle(
-                        color: Colors.black54,fontSize: 18),),
+    return Scaffold(
+      // floatingActionButton: FloatingActionButton.extended(
+      //   onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => const SaveResult())),
+      //   label: const Text("Save"),
+      //
+      // ),
+      body: Container(
+        padding: const EdgeInsets.all(10),
+        child: Scrollbar(
+          child: ListView.builder(
+              itemCount: data.length,
+              itemBuilder: (BuildContext context,int index){
+                return ListTile(
+                    leading: const Icon(Icons.analytics_outlined),
+                    title: Text(data[index].filename,
+                      style: const TextStyle(
+                          color: Colors.black54,fontSize: 18),),
 
-              );
-            }
+                );
+              }
+          ),
         ),
       ),
     );

@@ -16,25 +16,26 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-
   final _formKey = GlobalKey<FormState>();
   FirebaseAuth auth = FirebaseAuth.instance;
   String _email = '';
   String _pass = '';
 
   checkAuthentication() async {
-    auth.authStateChanges()
-        .listen((User? user) {
+    auth.authStateChanges().listen((User? user) {
       if (user != null) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Home(title: widget.title,)));
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => Home(
+                      title: widget.title,
+                    )));
       }
     });
   }
 
   void showInSnackBar(String value) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(value)
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 
   guestSignIn() async {
@@ -43,10 +44,8 @@ class _LoginState extends State<Login> {
 
   loginUser() async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _email,
-          password: _pass
-      );
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: _email, password: _pass);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         showInSnackBar('No user found for that email.');
@@ -65,46 +64,65 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    var brightness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brightness == Brightness.dark;
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Center(child: Text(widget.title!)),
-      ),
-      backgroundColor: Colors.green.shade300,
+      // appBar: AppBar(
+      //   automaticallyImplyLeading: false,
+      //   title: Center(child: Text(widget.title!)),
+      // ),
+      // backgroundColor: Colors.green.shade300,
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 80),
-                child: Text("Make Your Daily Life Simple, Count Things Faster.",textAlign: TextAlign.center, style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 34,
-                  fontWeight: FontWeight.w600,
-                ),),
+              Padding(
+                padding: const EdgeInsets.only(left: 20, top: 80),
+                child: SizedBox(
+                  child: Text(
+                    "QUANTIFY",
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: isDarkMode?Colors.amber:Colors.lightBlue,
+                    ),
+                  ),
+                  width: MediaQuery.of(context).size.width,
+                ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                padding: const EdgeInsets.only(top: 20.0),
+                child: SizedBox(
+                    child: Image.asset(isDarkMode?"images/logindark.png":"images/login.png", height: 300,)
+                ),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                 child: SingleChildScrollView(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(20)
-                    ),
+                        // color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(20)),
                     child: Column(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 10),
+                          padding: const EdgeInsets.only(
+                              top: 30, left: 20, right: 20, bottom: 10),
                           child: TextFormField(
-                            validator: (value){
-                              return value!.isEmpty ? 'PLease enter an email!' : null;
+                            validator: (value) {
+                              return value!.isEmpty
+                                  ? 'PLease enter an email!'
+                                  : null;
                             },
                             keyboardType: TextInputType.emailAddress,
                             decoration: const InputDecoration(
-                              labelText: 'example@abc.com',
-                              border: OutlineInputBorder(),
-                              prefixIcon: Icon(Icons.email),
+                              labelText: '   Email',
+                              border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20.0))),
                             ),
                             onChanged: (text) {
                               _email = text;
@@ -112,17 +130,21 @@ class _LoginState extends State<Login> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
+                          padding: const EdgeInsets.only(
+                              top: 10, left: 20, right: 20, bottom: 20),
                           child: TextFormField(
-                            validator: (value){
-                              return value!.isEmpty ? 'PLease enter password!' : null;
+                            validator: (value) {
+                              return value!.isEmpty
+                                  ? 'PLease enter password!'
+                                  : null;
                             },
                             keyboardType: TextInputType.visiblePassword,
                             obscureText: true,
                             decoration: const InputDecoration(
-                              labelText: 'Password',
-                              border: OutlineInputBorder(),
-                              prefixIcon: Icon(Icons.lock),
+                              labelText: '   Password',
+                              border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20.0))),
                             ),
                             onChanged: (text) {
                               _pass = text;
@@ -130,59 +152,80 @@ class _LoginState extends State<Login> {
                           ),
                         ),
                         ElevatedButton(
-                          onPressed: ()=>{
-                            if(_formKey != null){
-                              if(_formKey.currentState!.validate()){
-                                loginUser()
+                          style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20))),
+                          onPressed: () => {
+                            if (_formKey != null)
+                              {
+                                if (_formKey.currentState!.validate())
+                                  {loginUser()}
                               }
-                            }
                           },
                           child: const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 40),
-                            child: Text("Login", style: TextStyle(
-                              fontSize: 24,
-                            ),),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16, bottom: 4, left: 20, right: 20),
-                          child: Divider(
-                            color: Colors.grey,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 10,left: 20, right: 20, bottom: 30),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              ElevatedButton(
-                                onPressed: ()=>{Navigator.push(context, MaterialPageRoute(builder: (context) => Signup(title: widget.title,)))},
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width*0.25,
-                                  height: MediaQuery.of(context).size.height*0.06,
-                                  child: Center(
-                                    child: Text("Signup", style: TextStyle(
-                                      fontSize: 24,
-                                    ),),
-                                  ),
-                                ),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 40),
+                            child: Text(
+                              "Login",
+                              style: TextStyle(
+                                fontSize: 24,
                               ),
-                              SizedBox(width: 20,),
-                              ElevatedButton(
-                                onPressed: ()=>{guestSignIn()},
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width*0.25,
-                                  height: MediaQuery.of(context).size.height*0.06,
-                                  child: Center(
-                                    child: Text("Guest", style: TextStyle(
-                                      fontSize: 24,
-                                    ),),
-                                  ),
-                                ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        SizedBox(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Don't have an account? ",
+                                style: TextStyle(
+                                    color: Colors.grey.shade700, fontSize: 16),
+                              ),
+                              SelectableText(
+                                " Register",
+                                onTap: () => {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Signup(
+                                                title: widget.title,
+                                              )))
+                                },
+                                style: TextStyle(
+                                    color: isDarkMode?Colors.amberAccent:Colors.lightBlueAccent,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18),
                               ),
                             ],
                           ),
-                        )
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        SizedBox(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Or, use as",
+                                style: TextStyle(
+                                    color: Colors.grey.shade700, fontSize: 16),
+                              ),
+                              SelectableText(
+                                " Guest",
+                                onTap: () => {guestSignIn()},
+                                style: TextStyle(
+                                    color: isDarkMode?Colors.amberAccent:Colors.lightBlueAccent,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -195,5 +238,3 @@ class _LoginState extends State<Login> {
     );
   }
 }
-
-

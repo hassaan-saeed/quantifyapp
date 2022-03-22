@@ -23,7 +23,10 @@ class _GraphState extends State<Graph> {
 
   @override
   Widget build(BuildContext context) {
+    var brightness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brightness == Brightness.dark;
     return Container(
+      color: isDarkMode?Colors.black54:Colors.white,
       height: MediaQuery.of(context).size.height,
       child: Column(children: [
         Padding(

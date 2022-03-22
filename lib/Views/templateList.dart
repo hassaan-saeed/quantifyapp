@@ -76,10 +76,14 @@ class _TemplateListState extends State<TemplateList> {
   @override
   Widget build(BuildContext context) {
 
+    var brightness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brightness == Brightness.dark;
+
     Iterable _filteredData = data.where((i) => i.category == widget.cat);
     filteredData =  List.from(_filteredData);
 
     return Container(
+      color: isDarkMode?Colors.black54:Colors.grey.shade200,
       padding: EdgeInsets.all(10),
       child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -93,7 +97,7 @@ class _TemplateListState extends State<TemplateList> {
               child: Container(
                 decoration: BoxDecoration(
                   boxShadow: [BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
+                    color: Colors.grey.withOpacity(0.1),
                     spreadRadius: 3,
                     blurRadius: 6,
                     offset: Offset( 0.5, 0)
@@ -103,8 +107,8 @@ class _TemplateListState extends State<TemplateList> {
                   borderRadius: BorderRadius.circular(10),
                   child: GridTile(
                     footer: GridTileBar(
-                      backgroundColor: _selectedIndex == filteredData[index].tempName ? Colors.green.shade300 : Colors.white,
-                        title: Center(child: AutoSizeText(filteredData[index].tempName, style: TextStyle(fontSize: 16, color: Colors.black87), maxLines: 2,))
+                      backgroundColor: _selectedIndex == filteredData[index].tempName ? Colors.redAccent : isDarkMode?Colors.black87:Colors.white70,
+                        title: Center(child: AutoSizeText(filteredData[index].tempName, style: TextStyle(fontSize: 16, color: isDarkMode?Colors.white70:Colors.black87), maxLines: 2,))
                     ),
                     child: GestureDetector(
                       child: Image.asset(filteredData[index].imagePath, fit: BoxFit.cover,),

@@ -81,31 +81,41 @@ class _SignupState extends State<Signup> {
 
   @override
   Widget build(BuildContext context) {
+    var brightness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brightness == Brightness.dark;
     return Scaffold(
-      appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: Center(child: Text(widget.title!)),
-      ),
-      backgroundColor: Colors.green.shade300,
+      // appBar: AppBar(
+      //     automaticallyImplyLeading: false,
+      //     title: Center(child: Text(widget.title!)),
+      // ),
+      // backgroundColor: Colors.green.shade300,
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const Padding(
-                padding: EdgeInsets.only(left: 40,right: 40, top: 60, bottom: 20),
-                child: Text("Make Your Daily Life Simple, Count Things Faster.",textAlign: TextAlign.center, style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 34,
-                  fontWeight: FontWeight.w600,
-                ),),
-              ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                padding: const EdgeInsets.only(left: 20, top: 80),
+                child: SizedBox(
+                  child: Text(
+                    "QUANTIFY",
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: isDarkMode?Colors.amber:Colors.lightBlue
+                    ),
+                  ),
+                  width: MediaQuery.of(context).size.width,
+                ),
+              ),
+              SizedBox(child: Image.asset(isDarkMode?"images/signupdark.png":"images/signup.png", height: 200,)),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                 child: SingleChildScrollView(
                   child: Container(
                     decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
+                        // color: Colors.grey.shade200,
                         borderRadius: BorderRadius.circular(20)
                     ),
                     child: Column(
@@ -121,9 +131,9 @@ class _SignupState extends State<Signup> {
                               },
                               keyboardType: TextInputType.emailAddress,
                               decoration: const InputDecoration(
-                                labelText: 'example@abc.com',
-                                border: OutlineInputBorder(),
-                                prefixIcon: Icon(Icons.email),
+                                labelText: '   Email',
+                                border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
+
                               ),
                               onChanged: (text) {
                                 _email = text;
@@ -152,9 +162,8 @@ class _SignupState extends State<Signup> {
                               keyboardType: TextInputType.visiblePassword,
                               obscureText: true,
                               decoration: const InputDecoration(
-                                labelText: 'Password',
-                                border: OutlineInputBorder(),
-                                prefixIcon: Icon(Icons.lock),
+                                labelText: '   Password',
+                                border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
                               ),
                               onChanged: (text) {
                                 _pass = text;
@@ -185,9 +194,8 @@ class _SignupState extends State<Signup> {
                               keyboardType: TextInputType.visiblePassword,
                               obscureText: true,
                               decoration: const InputDecoration(
-                                labelText: 'Confirm Password',
-                                border: OutlineInputBorder(),
-                                prefixIcon: Icon(Icons.lock),
+                                labelText: '   Confirm Password',
+                                border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
                               ),
                             ),
                           ),
@@ -197,8 +205,8 @@ class _SignupState extends State<Signup> {
                           width: MediaQuery.of(context).size.width*0.78,
                           height: MediaQuery.of(context).size.height*0.08,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: const Border(top: BorderSide(width: 1, color: Colors.black38), bottom: BorderSide(width: 1, color: Colors.black38), right: BorderSide(width: 1, color: Colors.black38), left: BorderSide(width: 1, color: Colors.black38))
+                            borderRadius: BorderRadius.circular(20),
+                            border:  Border(top: BorderSide(width: 1, color: isDarkMode?Colors.white60:Colors.black38), bottom: BorderSide(width: 1, color: isDarkMode?Colors.white60:Colors.black38), right: BorderSide(width: 1, color: isDarkMode?Colors.white60:Colors.black38), left: BorderSide(width: 1, color: isDarkMode?Colors.white60:Colors.black38))
                           ),
                           child: Center(
                             child: DropdownButton<String>(
@@ -206,11 +214,8 @@ class _SignupState extends State<Signup> {
                               icon: const Icon(Icons.arrow_downward),
                               iconSize: 28,
                               elevation: 16,
-                              style: const TextStyle(color: Colors.black87, fontSize: 22),
-                              underline: Container(
-                                height: 1,
-                                color: Colors.green.shade700,
-                              ),
+                              style: TextStyle(color: isDarkMode?Colors.white60:Colors.black54, fontSize: 22),
+
                               onChanged: (String? newValue) {
                                 setState(() {
                                   dropdownValue = newValue!;
@@ -228,6 +233,7 @@ class _SignupState extends State<Signup> {
                         ),
                         SizedBox(height: 12,),
                         ElevatedButton(
+                          style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
                           onPressed: ()=>{
                             if(_formKey != null){
                               if(_formKey.currentState!.validate()){
@@ -238,53 +244,33 @@ class _SignupState extends State<Signup> {
                           child: Container(
                             width: MediaQuery.of(context).size.width*0.4,
                             height: MediaQuery.of(context).size.height*0.07,
-                            child: Center(
+                            child: const Center(
                               child: Text("Signup", style: TextStyle(
                                 fontSize: 24,
                               ),),
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8, bottom: 0, left: 20, right: 20),
-                          child: Divider(
-                            color: Colors.grey,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8,left: 20, right: 20, bottom: 20),
+                        const SizedBox(height: 20,),
+                        SizedBox(
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              ElevatedButton(
-                                onPressed: ()=>{Navigator.push(context, MaterialPageRoute(builder: (context) => Login(title: widget.title,)))},
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width*0.25,
-                                  height: MediaQuery.of(context).size.height*0.06,
-                                  child: Center(
-                                    child: Text("Login", style: TextStyle(
-                                      fontSize: 24,
-                                    ),),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 20,),
-                              ElevatedButton(
-                                onPressed: ()=>{guestSignIn()},
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width*0.25,
-                                  height: MediaQuery.of(context).size.height*0.06,
-                                  child: Center(
-                                    child: Text("Guest", style: TextStyle(
-                                      fontSize: 24,
-                                    ),),
-                                  ),
-                                ),
-                              ),
-
+                              Text("Already have an account? ", style: TextStyle(color: Colors.grey.shade700, fontSize: 16),),
+                              SelectableText(" Login", onTap: ()=>{Navigator.push(context, MaterialPageRoute(builder: (context) => Login(title: widget.title,)))}, style: TextStyle(color: isDarkMode?Colors.amberAccent:Colors.lightBlueAccent, fontWeight: FontWeight.bold, fontSize: 18),),
                             ],
                           ),
-                        )
+                        ),
+                        const SizedBox(height: 20,),
+                        SizedBox(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("Or, use as", style: TextStyle(color: Colors.grey.shade700, fontSize: 16),),
+                              SelectableText(" Guest", onTap: ()=>{guestSignIn()}, style: TextStyle(color: isDarkMode?Colors.amberAccent:Colors.lightBlueAccent, fontWeight: FontWeight.bold, fontSize: 18),),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
