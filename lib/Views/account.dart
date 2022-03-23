@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,6 +25,7 @@ class _AccountInfoState extends State<AccountInfo> {
   String _name = "Name";
   String _type = "Account Type";
   String _email = "Email@xyz.com";
+  Future<String>? _image;
 
   signOut() async {
     await FirebaseAuth.instance.signOut();
@@ -42,6 +46,7 @@ class _AccountInfoState extends State<AccountInfo> {
 
   Future<String> getData() async {
     String? temail = FirebaseAuth.instance.currentUser?.email;
+
     var cond1 = await FirebaseFirestore.instance
         .collection("subaccounts")
         .doc(currentUser?.uid)
@@ -58,6 +63,7 @@ class _AccountInfoState extends State<AccountInfo> {
           _email = documentSnapshot.get('email');
           print(_type);
           print('Document exists on the database sub');
+          return documentSnapshot;
         }
       });
       return Future.value("Data download successfully");
@@ -73,10 +79,18 @@ class _AccountInfoState extends State<AccountInfo> {
           _email = documentSnapshot.get('email');
           print(_type);
           print('Document exists on the database users');
+          return documentSnapshot;
         }
       });
+
       return Future.value("Data download successfully");
     }
+  }
+
+  Future<String> downloadURL() async {
+    Reference ref = FirebaseStorage.instance
+        .ref('profilepics/${FirebaseAuth.instance.currentUser?.uid}');
+    return await ref.getDownloadURL();
   }
 
   @override
@@ -142,10 +156,23 @@ class _AccountInfoState extends State<AccountInfo> {
                         CircleAvatar(
                           radius: 65,
                           backgroundColor: isDarkMode?Colors.amberAccent:Colors.lightBlueAccent,
-                          child: CircleAvatar(
-                            radius: 60,
-                            backgroundImage: AssetImage("images/image.png"),
-                          ),
+                          child: ClipOval(
+                            child: SizedBox.fromSize(
+                                size: Size.fromRadius(60),
+                                child: FutureBuilder(
+                                  future: downloadURL(),
+                                  builder: (BuildContext context, AsyncSnapshot<String> snapshot){
+                                    if(snapshot.connectionState == ConnectionState.done && snapshot.hasData){
+                                      return Image.network(snapshot.data!, fit: BoxFit.cover);
+                                    }
+                                    else{
+                                      return Icon(Icons.add_photo_alternate_outlined,size: 50, color: isDarkMode?Colors.black:Colors.white,);
+                                    }
+                                  },
+                                ),
+                                // child: Image.network(_image, fit: BoxFit.cover)
+                            ),
+                          )
                         ),
                         Padding(
                           padding: const EdgeInsets.all(20.0),
@@ -155,7 +182,7 @@ class _AccountInfoState extends State<AccountInfo> {
                               Text(
                                 _name,
                                 style: TextStyle(
-                                    fontSize: 28,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -198,7 +225,7 @@ class _AccountInfoState extends State<AccountInfo> {
                           height: MediaQuery.of(context).size.height*0.15,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                primary: Colors.indigo.shade300,
+                                primary: isDarkMode?Colors.deepOrange.shade400:Colors.indigo.shade300,
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20))),
                             onPressed: () => {
@@ -233,7 +260,7 @@ class _AccountInfoState extends State<AccountInfo> {
                           height: MediaQuery.of(context).size.height*0.15,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                primary: Colors.blue.shade400,
+                                primary: isDarkMode?Colors.deepPurple.shade300:Colors.blue.shade400,
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20))),
                             onPressed: () => {
@@ -277,7 +304,7 @@ class _AccountInfoState extends State<AccountInfo> {
                           height: MediaQuery.of(context).size.height*0.15,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                primary: Colors.lightBlue.shade700,
+                                primary: isDarkMode?Colors.cyan.shade400:Colors.lightBlue.shade700,
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20))),
                             onPressed: () => {},
@@ -307,7 +334,7 @@ class _AccountInfoState extends State<AccountInfo> {
                           height: MediaQuery.of(context).size.height*0.15,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              primary: Colors.teal.shade300,
+                              primary: isDarkMode?Colors.green.shade500:Colors.teal.shade300,
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20))),
                             onPressed: () => {},

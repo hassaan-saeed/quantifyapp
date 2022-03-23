@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
-late File _image;
+
 String result = '';
 
 class Option extends StatefulWidget {
@@ -18,6 +18,7 @@ class _OptionState extends State<Option> {
 
   ImagePicker imagePicker = ImagePicker();
   final imageLabeler = GoogleMlKit.vision.imageLabeler();
+  late File _image;
 
   @override
   void initState() {

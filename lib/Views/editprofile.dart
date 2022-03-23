@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -11,7 +12,6 @@ class EditProfile extends StatefulWidget {
   State<EditProfile> createState() => _EditProfileState();
 }
 
-late File _image;
 
 class _EditProfileState extends State<EditProfile> {
 
@@ -19,11 +19,14 @@ class _EditProfileState extends State<EditProfile> {
   ImagePicker imagePicker = ImagePicker();
   String name = '';
   String type = 'Select Type';
+  File? _image;
 
   Future<void> chooseImageFromLibrary() async{
     XFile? image = await imagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
-      _image = File(image!=null?image.path:"images/image.png");
+      if(image!=null){
+        _image = File(image.path);
+      }
     });
   }
 
@@ -35,29 +38,46 @@ class _EditProfileState extends State<EditProfile> {
     ));
   }
 
-  save() async {
+  Future<void> save() async {
     // if(FirebaseAuth.instance.currentUser.)
     await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).set(
         {
           "name" : name,
-          "type" : type,
+          // "type" : type,
           // "profilepic" : _image
         }, SetOptions(merge: true))
         .then((value) => {
-          Navigator.pop(context)
     }).catchError((error)=> showInSnackBar(error));
-
+    try {
+      await FirebaseStorage.instance
+          .ref('profilepics/${FirebaseAuth.instance.currentUser?.uid}')
+          .putFile(_image!);
+    } on FirebaseException catch (e) {
+      print(e);
+    }
+    // Reference firebaseStorageRef = FirebaseStorage.instance.ref().child('profilepics/${FirebaseAuth.instance.currentUser?.uid}');
+    // UploadTask uploadTask = firebaseStorageRef.putFile(_image!);
+    // TaskSnapshot taskSnapshot = await uploadTask.snapshot;
+    // taskSnapshot.ref.getDownloadURL().then(
+    //       (value) => print("Done: $value"),
+    // );
+    Navigator.pop(context);
   }
+
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _image = File('images/image.png');
+    // _image = File('images/image.png');
   }
 
   @override
   Widget build(BuildContext context) {
+    var brightness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -65,92 +85,105 @@ class _EditProfileState extends State<EditProfile> {
       ),
       body: Form(
         key: _formKey,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 10),
-                child: TextFormField(
-                  validator: (value){
-                    return value!.isEmpty ? 'PLease enter a name!' : null;
-                  },
-                  keyboardType: TextInputType.name,
-                  decoration: const InputDecoration(
-                    labelText: 'Enter Name',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.person),
-                  ),
-                  onChanged: (text) {
-                    name = text;
-                  },
-                ),
-              ),
-              const SizedBox(height: 20,),
-              Container(
-                width: MediaQuery.of(context).size.width*0.78,
-                height: MediaQuery.of(context).size.height*0.08,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: const Border(top: BorderSide(width: 1, color: Colors.black38), bottom: BorderSide(width: 1, color: Colors.black38), right: BorderSide(width: 1, color: Colors.black38), left: BorderSide(width: 1, color: Colors.black38))
-                ),
-                child: Center(
-                  child: DropdownButton<String>(
-                    value: type,
-                    icon: const Icon(Icons.arrow_downward),
-                    iconSize: 28,
-                    elevation: 16,
-                    style: const TextStyle(color: Colors.black87, fontSize: 22),
-                    underline: Container(
-                      height: 1,
-                      color: Colors.green.shade700,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: CircleAvatar(
+                    radius: 65,
+                    backgroundColor: isDarkMode?Colors.amberAccent:Colors.lightBlueAccent,
+                    child: TextButton(
+                        onPressed: ()=>{chooseImageFromLibrary()},
+                        child: _image==null?
+                        Icon(Icons.add_photo_alternate_outlined,size: 50, color: isDarkMode?Colors.black:Colors.white,)
+                            :
+                        ClipOval(
+                          child: SizedBox.fromSize(
+                              size: Size.fromRadius(60),
+                              child: Image.file(_image!, fit: BoxFit.cover)
+                          ),
+                        )
+
                     ),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        type = newValue!;
-                      });
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20, left: 40, right: 40, bottom: 10),
+                  child: TextFormField(
+                    validator: (value){
+                      return value!.isEmpty ? 'PLease enter a name!' : null;
                     },
-                    items: <String>['Select Type','Individual', 'Business']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
+                    keyboardType: TextInputType.name,
+                    decoration: const InputDecoration(
+                      labelText: 'Enter Name',
+                      border: UnderlineInputBorder(),
+                      prefixIcon: Icon(Icons.person),
+                    ),
+                    onChanged: (text) {
+                      name = text;
+                    },
                   ),
                 ),
-              ),
-              const SizedBox(height: 20,),
-              ElevatedButton(
-                onPressed: ()=>{chooseImageFromLibrary()},
-                child: Container(
-                  width: MediaQuery.of(context).size.width*0.7,
-                  height: MediaQuery.of(context).size.height*0.07,
-                  child: const Center(
-                    child: Text("Upload Profile Pic", style: TextStyle(
-                      fontSize: 24,
-                    ),),
-                  ),
+              ],
+            ),
+
+
+            // Container(
+            //   width: MediaQuery.of(context).size.width*0.78,
+            //   height: MediaQuery.of(context).size.height*0.08,
+            //   decoration: BoxDecoration(
+            //       borderRadius: BorderRadius.circular(10),
+            //       border: const Border(top: BorderSide(width: 1, color: Colors.black38), bottom: BorderSide(width: 1, color: Colors.black38), right: BorderSide(width: 1, color: Colors.black38), left: BorderSide(width: 1, color: Colors.black38))
+            //   ),
+            //   child: Center(
+            //     child: DropdownButton<String>(
+            //       value: type,
+            //       icon: const Icon(Icons.arrow_downward),
+            //       iconSize: 28,
+            //       elevation: 16,
+            //       style: const TextStyle(color: Colors.black87, fontSize: 22),
+            //       underline: Container(
+            //         height: 1,
+            //         color: Colors.green.shade700,
+            //       ),
+            //       onChanged: (String? newValue) {
+            //         setState(() {
+            //           type = newValue!;
+            //         });
+            //       },
+            //       items: <String>['Select Type','Individual', 'Business']
+            //           .map<DropdownMenuItem<String>>((String value) {
+            //         return DropdownMenuItem<String>(
+            //           value: value,
+            //           child: Text(value),
+            //         );
+            //       }).toList(),
+            //     ),
+            //   ),
+            // ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20))),
+              onPressed: ()=>{
+                if(_formKey.currentState!.validate()){
+                  save()
+                }
+              },
+              child: Container(
+                width: MediaQuery.of(context).size.width*0.4,
+                height: MediaQuery.of(context).size.height*0.07,
+                child: const Center(
+                  child: Text("Save", style: TextStyle(
+                    fontSize: 24,
+                  ),),
                 ),
               ),
-              const SizedBox(height: 50,),
-              ElevatedButton(
-                onPressed: ()=>{
-                  if(_formKey.currentState!.validate()){
-                    save()
-                  }
-                },
-                child: Container(
-                  width: MediaQuery.of(context).size.width*0.4,
-                  height: MediaQuery.of(context).size.height*0.07,
-                  child: const Center(
-                    child: Text("Save", style: TextStyle(
-                      fontSize: 24,
-                    ),),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
