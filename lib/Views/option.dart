@@ -101,31 +101,62 @@ class _OptionState extends State<Option> {
                   ),
                 ),
               ),
-              ElevatedButton(
-                onPressed: ()=>{chooseImageFromLibrary()},
-                child: Container(
-                  width: MediaQuery.of(context).size.width*0.4,
-                  height: MediaQuery.of(context).size.height*0.07,
-                  child: const Center(
-                    child: Text("Photo Library", style: TextStyle(
-                      fontSize: 24,
-                    ),),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width*0.4,
+                    height: MediaQuery.of(context).size.height*0.15,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20))),
+                      onPressed: ()=>{chooseImageFromLibrary()},
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.photo_library_outlined, size: 50,),
+                            Text(
+                              "Photo Library",
+                              style: TextStyle(
+                                fontSize: 20,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              SizedBox(height: 20,),
-              ElevatedButton(
-                onPressed: ()=>{captureImageFromCamera()},
-                child: Container(
-                  width: MediaQuery.of(context).size.width*0.4,
-                  height: MediaQuery.of(context).size.height*0.07,
-                  child: Center(
-                    child: Text("Camera", style: TextStyle(
-                      fontSize: 24,
-                    ),),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width*0.4,
+                    height: MediaQuery.of(context).size.height*0.15,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20))),
+                      onPressed: ()=>{captureImageFromCamera()},
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.camera_alt_outlined, size: 50,),
+                            Text(
+                              "Camera",
+                              style: TextStyle(
+                                fontSize: 20,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
+
               SizedBox(height: 20,),
               Container(
                 child: Text(

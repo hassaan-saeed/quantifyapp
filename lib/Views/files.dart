@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:quantify/Views/addfiles.dart';
+import 'package:quantify/Views/reports.dart';
 import 'package:quantify/Views/saveResult.dart';
 
 class Files extends StatefulWidget {
@@ -10,43 +14,77 @@ class Files extends StatefulWidget {
 
 class _FilesState extends State<Files> {
 
-  List<_FilesData> data = [
-  _FilesData("January"),
-  _FilesData("February"),
-  _FilesData("March"),
-  _FilesData("April"),
-  _FilesData("May"),
-  _FilesData("June"),
-  _FilesData("July"),
-  _FilesData("August"),
-  _FilesData("September"),
-  _FilesData("October"),
-  _FilesData("November"),
-  _FilesData("December"),
-  ];
+  List<String> files = [];
+
+  Future<void> getFiles() async {
+
+    await FirebaseFirestore.instance.collection('files').doc(FirebaseAuth.instance.currentUser?.uid).collection('records').get()
+        .then((QuerySnapshot querySnapshot) {
+      files = [];
+      for (var doc in querySnapshot.docs) {
+        files.add(doc['name']);
+        print(files);
+      }
+    });
+    return Future.value("Files download successfully");
+  }
+
+  Future<void> _refresh() async {
+    setState(() {
+      getFiles();
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    var brightness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brightness == Brightness.dark;
     return Scaffold(
-      // floatingActionButton: FloatingActionButton.extended(
-      //   onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => const SaveResult())),
-      //   label: const Text("Save"),
-      //
-      // ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => const AddFile())),
+        label: const Text("ADD"),
+
+      ),
       body: Container(
         padding: const EdgeInsets.all(10),
-        child: Scrollbar(
-          child: ListView.builder(
-              itemCount: data.length,
-              itemBuilder: (BuildContext context,int index){
-                return ListTile(
-                    leading: const Icon(Icons.analytics_outlined),
-                    title: Text(data[index].filename,
-                      style: const TextStyle(
-                          color: Colors.black54,fontSize: 18),),
+        child: RefreshIndicator(
+          onRefresh: _refresh,
+          child: FutureBuilder(
+            future: getFiles(),
+            builder: (BuildContext context, AsyncSnapshot<void> snapshot){
+              if(snapshot.connectionState == ConnectionState.done && snapshot.hasData){
+                return ListView.builder(
+                    itemCount: files.length,
+                    itemBuilder: (BuildContext context,int index){
+                      return Padding(
+                        padding: const EdgeInsets.all(6.0),
+                        child: Material(
+                          elevation: 2.0,
+                          child: ListTile(
+                            onTap: ()=>{Navigator.push(context, MaterialPageRoute(builder: (context) => Reports(file: files[index])))},
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            tileColor: isDarkMode?Colors.black54:Colors.white,
+                            leading: const Icon(Icons.analytics_outlined),
+                            title: Text('${files[index]}',
+                              style: const TextStyle(fontSize: 18),),
 
+                          ),
+                        ),
+                      );
+                    }
                 );
               }
+              else{
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
           ),
         ),
       ),
@@ -54,7 +92,3 @@ class _FilesState extends State<Files> {
   }
 }
 
-class _FilesData{
-  _FilesData(this.filename);
-  final String filename;
-}
