@@ -62,10 +62,13 @@ class _SignupState extends State<Signup> {
             "uid" : FirebaseAuth.instance.currentUser?.uid
           });
     } on FirebaseAuthException catch (e) {
+      print(e);
       if (e.code == 'weak-password') {
         showInSnackBar('The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
         showInSnackBar('The account already exists for that email.');
+      } else if (e.code == 'invalid-email') {
+        showInSnackBar('The email is not correct.');
       }
     } catch (e) {
       print(e);
@@ -215,7 +218,6 @@ class _SignupState extends State<Signup> {
                               iconSize: 28,
                               elevation: 16,
                               style: TextStyle(color: isDarkMode?Colors.white60:Colors.black54, fontSize: 22),
-
                               onChanged: (String? newValue) {
                                 setState(() {
                                   dropdownValue = newValue!;

@@ -43,15 +43,15 @@ class _EditProfileState extends State<EditProfile> {
     await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).set(
         {
           "name" : name,
-          // "type" : type,
-          // "profilepic" : _image
         }, SetOptions(merge: true))
         .then((value) => {
     }).catchError((error)=> showInSnackBar(error));
     try {
-      await FirebaseStorage.instance
-          .ref('profilepics/${FirebaseAuth.instance.currentUser?.uid}')
-          .putFile(_image!);
+      if(_image!=null){
+        await FirebaseStorage.instance
+            .ref('profilepics/${FirebaseAuth.instance.currentUser?.uid}')
+            .putFile(_image!);
+      }
     } on FirebaseException catch (e) {
       print(e);
     }
@@ -114,7 +114,15 @@ class _EditProfileState extends State<EditProfile> {
                   padding: const EdgeInsets.only(top: 20, left: 40, right: 40, bottom: 10),
                   child: TextFormField(
                     validator: (value){
-                      return value!.isEmpty ? 'PLease enter a name!' : null;
+                      if(value!.isEmpty){
+                        return 'Please enter a name!';
+                      }
+                      else if(value.length >=17){
+                        return 'Name should be less than 17 characters!';
+                      }
+                      else{
+                        return null;
+                      }
                     },
                     keyboardType: TextInputType.name,
                     decoration: const InputDecoration(

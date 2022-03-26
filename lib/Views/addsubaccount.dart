@@ -70,115 +70,105 @@ class _AddNewSubAccState extends State<AddNewSubAcc> {
       ),
       body: Form(
         key: _formKey,
-        child: SingleChildScrollView(
+        child: Container(
+          alignment: Alignment.center,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                child: SingleChildScrollView(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(20)
-                    ),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 10,),
-                        Container(
-                          width: MediaQuery.of(context).size.width*0.78,
-                          height: MediaQuery.of(context).size.height*0.08,
-                          child: Center(
-                            child: TextFormField(
-                              validator: (value){
-                                return value!.isEmpty ? 'PLease enter a name!' : null;
-                              },
-                              keyboardType: TextInputType.name,
-                              decoration: const InputDecoration(
-                                labelText: 'Enter Name',
-                                border: OutlineInputBorder(),
-                                prefixIcon: Icon(Icons.person_outline),
-                              ),
-                              onChanged: (text) {
-                                _name = text;
-                              },
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10,),
-                        Container(
-                          width: MediaQuery.of(context).size.width*0.78,
-                          height: MediaQuery.of(context).size.height*0.08,
-                          child: Center(
-                            child: TextFormField(
-                              validator: (value){
-                                return value!.isEmpty ? 'PLease enter an email!' : null;
-                              },
-                              keyboardType: TextInputType.emailAddress,
-                              decoration: const InputDecoration(
-                                labelText: 'example@abc.com',
-                                border: OutlineInputBorder(),
-                                prefixIcon: Icon(Icons.email),
-                              ),
-                              onChanged: (text) {
-                                _email = text;
-                              },
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10,),
-                        Container(
-                          width: MediaQuery.of(context).size.width*0.78,
-                          height: MediaQuery.of(context).size.height*0.08,
-                          child: Center(
-                            child: TextFormField(
-                              validator: (value){
-                                if(value!.isEmpty){
-                                  return 'Please enter a password!';
-                                }
-                                else if(value.length < 8){
-                                  return 'Password must be 8 characters long!';
-                                }
-                                else{
-                                  return null;
-                                }
-                              },
-                              keyboardType: TextInputType.visiblePassword,
-                              obscureText: true,
-                              decoration: const InputDecoration(
-                                labelText: 'Password',
-                                border: OutlineInputBorder(),
-                                prefixIcon: Icon(Icons.lock),
-                              ),
-                              onChanged: (text) {
-                                _pass = text;
-                              },
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12,),
-                        ElevatedButton(
-                          onPressed: ()=>{
-                            if(_formKey != null){
-                              if(_formKey.currentState!.validate()){
-                                createSubAcc()
-                              }
-                            }
-                          },
-                          child: Container(
-                            width: MediaQuery.of(context).size.width*0.4,
-                            height: MediaQuery.of(context).size.height*0.07,
-                            child: const Center(
-                              child: Text("ADD", style: TextStyle(
-                                fontSize: 24,
-                              ),),
-                            ),
-                          ),
-                        ),
-                      ],
+              const SizedBox(height: 10,),
+              Column(
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width*0.78,
+                    height: MediaQuery.of(context).size.height*0.08,
+                    child: TextFormField(
+                      validator: (value){
+                        return value!.isEmpty ? 'PLease enter a name!' : null;
+                      },
+                      keyboardType: TextInputType.name,
+                      decoration: const InputDecoration(
+                        labelText: 'Enter Name',
+                        border: UnderlineInputBorder(),
+                        prefixIcon: Icon(Icons.person_outline),
+                      ),
+                      onChanged: (text) {
+                        _name = text;
+                      },
                     ),
                   ),
+                  const SizedBox(height: 10,),
+                  Container(
+                    width: MediaQuery.of(context).size.width*0.78,
+                    height: MediaQuery.of(context).size.height*0.08,
+                    child: TextFormField(
+                      validator: (value){
+                        return value!.isEmpty ? 'PLease enter an email!' : null;
+                      },
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(
+                        labelText: 'Enter Email',
+                        border: UnderlineInputBorder(),
+                        prefixIcon: Icon(Icons.email),
+                      ),
+                      onChanged: (text) {
+                        _email = text;
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 10,),
+                  Container(
+                    width: MediaQuery.of(context).size.width*0.78,
+                    height: MediaQuery.of(context).size.height*0.08,
+                    child: TextFormField(
+                      validator: (value){
+                        if(value!.isEmpty){
+                          return 'Please enter a password!';
+                        }
+                        else if(value.length < 8){
+                          return 'Password must be 8 characters long!';
+                        }
+                        else{
+                          return null;
+                        }
+                      },
+                      keyboardType: TextInputType.visiblePassword,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Enter Password',
+                        border: UnderlineInputBorder(),
+                        prefixIcon: Icon(Icons.lock),
+                      ),
+                      onChanged: (text) {
+                        _pass = text;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 12,),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20))),
+                onPressed: ()=>{
+                  if(_formKey != null){
+                    if(_formKey.currentState!.validate()){
+                      createSubAcc()
+                    }
+                  }
+                },
+                child: Container(
+                  width: MediaQuery.of(context).size.width*0.4,
+                  height: MediaQuery.of(context).size.height*0.07,
+                  child: const Center(
+                    child: Text("ADD", style: TextStyle(
+                      fontSize: 24,
+                    ),),
+                  ),
                 ),
-              )
+              ),
             ],
           ),
         ),
