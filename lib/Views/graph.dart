@@ -25,7 +25,40 @@ class _GraphState extends State<Graph> {
 
   Future<void> getData() async {
 
-    await FirebaseFirestore.instance.collection('files').doc(FirebaseAuth.instance.currentUser?.uid).collection('records').get()
+    var currentUser = FirebaseAuth.instance.currentUser;
+    var _dataUser ;
+    try{
+      var cond1 = await FirebaseFirestore.instance
+          .collection("subaccounts")
+          .doc(currentUser?.uid)
+          .get();
+      if (cond1.exists) {
+        await FirebaseFirestore.instance
+            .collection('subaccounts')
+            .doc(currentUser?.uid)
+            .get()
+            .then((DocumentSnapshot documentSnapshot) {
+          if (documentSnapshot.exists) {
+            _dataUser = documentSnapshot.get('manager');
+            print('Manager received');
+          }
+        });
+      } else {
+        _dataUser = currentUser?.uid;
+      }
+    }
+    on FirebaseException catch (e){
+      print(e);
+    }
+    catch(e){
+      print(e);
+    }
+
+    await FirebaseFirestore.instance
+        .collection('files')
+        .doc(_dataUser)
+        .collection('records')
+        .get()
         .then((QuerySnapshot querySnapshot) {
       data = [
         _GraphData('Wood', 0),
@@ -40,7 +73,7 @@ class _GraphState extends State<Graph> {
       for (var doc in querySnapshot.docs) {
         FirebaseFirestore.instance
             .collection('files')
-            .doc(FirebaseAuth.instance.currentUser?.uid)
+            .doc(_dataUser)
             .collection('records')
             .doc(doc['name'])
             .collection('results')
@@ -48,9 +81,9 @@ class _GraphState extends State<Graph> {
             .then((QuerySnapshot querySnapshot) {
           // reports = [];
           for (var doc in querySnapshot.docs) {
-            for(var d in data){
-              if(d.category == doc['category']){
-                d.count+=int.parse(doc['count']);
+            for (var d in data) {
+              if (d.category == doc['category']) {
+                d.count += int.parse(doc['count']);
                 print(doc['count']);
                 print(d.count);
               }
@@ -70,46 +103,64 @@ class _GraphState extends State<Graph> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {
+      getData();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     var brightness = MediaQuery.of(context).platformBrightness;
     bool isDarkMode = brightness == Brightness.dark;
     return Container(
-      color: isDarkMode?Colors.black54:Colors.white,
+      color: isDarkMode ? Colors.black54 : Colors.white,
       height: MediaQuery.of(context).size.height,
       child: RefreshIndicator(
         onRefresh: _refresh,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(children: [
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: SfCartesianChart(
-                title: ChartTitle(text: 'Weekly', textStyle: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-
+                  title: ChartTitle(
+                      text: 'Weekly',
+                      textStyle:
+                          TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
                   primaryXAxis: CategoryAxis(),
-                  primaryYAxis: NumericAxis(minimum: 0, maximum: 200, interval: 50),
+
                   tooltipBehavior: TooltipBehavior(enable: true),
                   series: <ChartSeries<_GraphData, String>>[
                     ColumnSeries<_GraphData, String>(
-                      borderRadius: BorderRadius.only(topLeft: Radius.circular(6.0),topRight: Radius.circular(6.0),),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(6.0),
+                          topRight: Radius.circular(6.0),
+                        ),
                         dataSource: data,
                         xValueMapper: (_GraphData data, _) => data.category,
                         yValueMapper: (_GraphData data, _) => data.count,
                         name: 'Report',
-                        color: Colors.teal
-                    )
+                        color: Colors.teal)
                   ]),
             ),
+            const SizedBox(height: 20,),
             //Initialize the chart widget
             SfCircularChart(
                 // primaryXAxis: CategoryAxis(),
                 // Chart title
-                title: ChartTitle(text: 'Monthly', textStyle: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+                title: ChartTitle(
+                    text: 'Monthly',
+                    textStyle:
+                        TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
                 // Enable legend
                 legend: Legend(isVisible: true),
                 // Enable tooltip
                 tooltipBehavior: TooltipBehavior(enable: true),
-
                 series: <PieSeries<_GraphData, String>>[
                   PieSeries<_GraphData, String>(
                       radius: '90%',
@@ -120,16 +171,15 @@ class _GraphState extends State<Graph> {
                       name: 'Report',
                       // Enable data label
                       dataLabelSettings: DataLabelSettings(isVisible: true)
-                        // dataLabelSettings: DataLabelSettings(
-                        // margin: const EdgeInsets.all(0),
-                        // isVisible: true,
-                        // labelPosition: ChartDataLabelPosition.outside,
-                        // connectorLineSettings: const ConnectorLineSettings(
-                        // type: ConnectorType.curve, length: '20%'),
-                        // labelIntersectAction: _labelIntersectAction)
-                  )
+                      // dataLabelSettings: DataLabelSettings(
+                      // margin: const EdgeInsets.all(0),
+                      // isVisible: true,
+                      // labelPosition: ChartDataLabelPosition.outside,
+                      // connectorLineSettings: const ConnectorLineSettings(
+                      // type: ConnectorType.curve, length: '20%'),
+                      // labelIntersectAction: _labelIntersectAction)
+                      )
                 ]),
-
           ]),
         ),
       ),

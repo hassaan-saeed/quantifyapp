@@ -27,12 +27,10 @@ class _SubAccountsState extends State<SubAccounts> {
   Future<String> getSubs() async {
     await FirebaseFirestore.instance
         .collection('subaccounts')
-        // .orderBy('name')
         .where('manager', isEqualTo: FirebaseAuth.instance.currentUser?.uid)
         .get()
         .then((QuerySnapshot querySnapshot) {
-      // snapshot = querySnapshot as AsyncSnapshot<QuerySnapshot<Object?>>;
-      // print(querySnapshot);
+      subsList = [];
       querySnapshot.docs.forEach((doc) {
         subsList.add(doc.data());
         print(doc.data());
@@ -42,18 +40,12 @@ class _SubAccountsState extends State<SubAccounts> {
   }
 
   deleteSub(String email, String password) async {
-    // print("bbb");
     FirebaseApp app = await Firebase.initializeApp(name: 'Secondary', options: Firebase.app().options);
 
     try {
-      // print("ccc");
-      // print(email);
-      // print(password);
       UserCredential userCredential = await FirebaseAuth.instanceFor(app: app).signInWithEmailAndPassword(email: email, password: password);
-      // print("ddd");
       await FirebaseAuth.instanceFor(app: app).currentUser?.delete();
       await FirebaseFirestore.instance.collection("subaccounts").doc(userCredential.user?.uid).delete().then((value) => showInSnackBar("Sub-Account Deleted")).catchError((error) => print("Failed to delete user: $error"));
-      // print("aaa");
     } on FirebaseAuthException catch (e) {
       if(password==""){
         showInSnackBar("Empty Password");
@@ -92,22 +84,7 @@ class _SubAccountsState extends State<SubAccounts> {
                 onChanged: (text) {
                       _tpass = text;
                       },
-                // onSubmitted: (String value){
-                //   _tpass = value;
-                // },
               ),
-              // content: TextFormField(
-              //   keyboardType: TextInputType.visiblePassword,
-              //   obscureText: true,
-              //   decoration: const InputDecoration(
-              //     labelText: 'Enter Sub-Account\'s Password',
-              //     prefixIcon: Icon(Icons.lock),
-              //   ),
-              //   onChanged: (text) {
-              //     _tpass = text;
-              //   },
-              // ),
-              // content: Text("Do you want to delete this account?"),
               actions: [
                 TextButton(onPressed: () => Navigator.pop(context, 'No'), child: const Text("No")),
                 TextButton(onPressed: () => {deleteSub(email, _tpass)}, child: const Text("Yes")),
@@ -115,7 +92,11 @@ class _SubAccountsState extends State<SubAccounts> {
             ));
   }
 
-  // final Stream<QuerySnapshot> _usersStream = FirebaseFirestore.instance.collection('subaccounts').where('manager', isEqualTo: FirebaseAuth.instance.currentUser?.uid).snapshots();
+  Future<void> _refresh() async {
+    setState(() {
+      getSubs();
+    });
+  }
 
   @override
   void initState() {
@@ -181,21 +162,24 @@ class _SubAccountsState extends State<SubAccounts> {
                     height: 20,
                   ),
                   Expanded(
-                    child: ListView.builder(
-                        itemCount: subsList.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(
-                                left: 20, right: 20, top: 5, bottom: 5),
-                            child: Card(
-                              child: ListTile(
-                                onTap: ()=>{createDialog(subsList[index]['email'])},
-                                title: Text(subsList[index]['name']),
-                                subtitle: Text(subsList[index]['email']),
+                    child: RefreshIndicator(
+                      onRefresh: _refresh,
+                      child: ListView.builder(
+                          itemCount: subsList.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 20, right: 20, top: 5, bottom: 5),
+                              child: Card(
+                                child: ListTile(
+                                  onTap: ()=>{createDialog(subsList[index]['email'])},
+                                  title: Text(subsList[index]['name']),
+                                  subtitle: Text(subsList[index]['email']),
+                                ),
                               ),
-                            ),
-                          );
-                        }),
+                            );
+                          }),
+                    ),
                   )
                   // ListView(
                   //   children: subsList.map((DocumentSnapshot document) {

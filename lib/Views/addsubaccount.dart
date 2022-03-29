@@ -21,7 +21,7 @@ class _AddNewSubAccState extends State<AddNewSubAcc> {
 
   void showInSnackBar(String value) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        backgroundColor: Colors.redAccent,
+        backgroundColor: value=="Sub-Account Created"?Colors.greenAccent:Colors.redAccent,
         duration: const Duration(seconds: 5),
         content: Text(value)
     ));
@@ -39,8 +39,17 @@ class _AddNewSubAccState extends State<AddNewSubAcc> {
             "manager" : FirebaseAuth.instance.currentUser?.uid,
             "type" : "subaccount"
           });
+    }on FirebaseAuthException catch (e) {
+      print(e);
+      if (e.code == 'weak-password') {
+        showInSnackBar('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        showInSnackBar('The account already exists for that email.');
+      } else if (e.code == 'invalid-email') {
+        showInSnackBar('The email is not correct.');
+      }
     }
-    on FirebaseAuthException catch (e) {print(e);}
+    catch (e) {print(e);}
     await app.delete();
     return Future.sync(() => userCredential);
   }
@@ -48,8 +57,7 @@ class _AddNewSubAccState extends State<AddNewSubAcc> {
   createSubAcc() async {
     try {
       register(_email, _pass);
-      showInSnackBar("Sub-Account Created");
-      Navigator.pop(context);
+
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         showInSnackBar('The password provided is too weak.');
@@ -59,6 +67,8 @@ class _AddNewSubAccState extends State<AddNewSubAcc> {
     } catch (e) {
       print(e);
     }
+    showInSnackBar("Sub-Account Created");
+    Navigator.pop(context);
   }
 
   @override
@@ -84,7 +94,15 @@ class _AddNewSubAccState extends State<AddNewSubAcc> {
                     height: MediaQuery.of(context).size.height*0.08,
                     child: TextFormField(
                       validator: (value){
-                        return value!.isEmpty ? 'PLease enter a name!' : null;
+                        if(value!.isEmpty){
+                          return 'PLease enter a name!';
+                        }
+                        else if(value.length >=17){
+                          return 'Name should be less than 17 characters!';
+                        }
+                        else{
+                          return null;
+                        }
                       },
                       keyboardType: TextInputType.name,
                       decoration: const InputDecoration(

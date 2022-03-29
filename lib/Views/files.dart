@@ -18,7 +18,36 @@ class _FilesState extends State<Files> {
 
   Future<void> getFiles() async {
 
-    await FirebaseFirestore.instance.collection('files').doc(FirebaseAuth.instance.currentUser?.uid).collection('records').get()
+    var currentUser = FirebaseAuth.instance.currentUser;
+    var _dataUser ;
+    try{
+      var cond1 = await FirebaseFirestore.instance
+          .collection("subaccounts")
+          .doc(currentUser?.uid)
+          .get();
+      if (cond1.exists) {
+        await FirebaseFirestore.instance
+            .collection('subaccounts')
+            .doc(currentUser?.uid)
+            .get()
+            .then((DocumentSnapshot documentSnapshot) {
+          if (documentSnapshot.exists) {
+              _dataUser = documentSnapshot.get('manager');
+            print('Manager received');
+          }
+        });
+      } else {
+        _dataUser = currentUser?.uid;
+      }
+    }
+    on FirebaseException catch (e){
+      print(e);
+    }
+    catch(e){
+      print(e);
+    }
+
+    await FirebaseFirestore.instance.collection('files').doc(_dataUser).collection('records').get()
         .then((QuerySnapshot querySnapshot) {
       files = [];
       for (var doc in querySnapshot.docs) {
