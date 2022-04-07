@@ -19,6 +19,7 @@ class _AddFileState extends State<AddFile> {
 
   void showInSnackBar(String value) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      behavior: SnackBarBehavior.floating,
         backgroundColor: value=="Record Added"?Colors.greenAccent:Colors.redAccent,
         duration: const Duration(seconds: 5),
         content: Text(value)

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:quantify/Views/templateList.dart';
 import 'option.dart';
 import 'templateList.dart';
-// import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class Template extends StatefulWidget {
   const Template({Key? key}) : super(key: key);

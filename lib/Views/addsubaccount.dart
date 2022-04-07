@@ -21,6 +21,7 @@ class _AddNewSubAccState extends State<AddNewSubAcc> {
 
   void showInSnackBar(String value) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
         backgroundColor: value=="Sub-Account Created"?Colors.greenAccent:Colors.redAccent,
         duration: const Duration(seconds: 5),
         content: Text(value)

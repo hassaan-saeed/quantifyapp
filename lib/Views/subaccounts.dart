@@ -18,6 +18,7 @@ class _SubAccountsState extends State<SubAccounts> {
 
   void showInSnackBar(String value) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
       backgroundColor: Colors.redAccent,
       duration: const Duration(seconds: 5),
         content: Text(value)
