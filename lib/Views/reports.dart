@@ -1,6 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:excel/excel.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'dart:io';
 
 class Reports extends StatefulWidget {
   const Reports({Key? key, required this.file}) : super(key: key);
@@ -66,6 +71,37 @@ class _ReportsState extends State<Reports> {
     return Future.value("Files download successfully");
   }
 
+  createExcel() async {
+    var excel = Excel.createExcel(); // automatically creates 1 empty sheet: Sheet1
+
+    excel.rename('Sheet1', widget.file);
+    Sheet sheetObject = excel[widget.file];
+
+    for(var r in reports){
+      List<dynamic> list = [];
+      list.add(r['category']);
+      list.add(r['template']);
+      list.add(r['count']);
+      sheetObject.appendRow(list);
+    }
+
+    Directory appDocumentsDirectory = await getApplicationDocumentsDirectory(); // 1
+    String appDocumentsPath = appDocumentsDirectory.path; // 2
+    String filePath = '$appDocumentsPath/excel.xlsx';
+
+    final directory = await getApplicationDocumentsDirectory();
+    final path = directory.path;
+    final file = File('$path/excel.xlsx');
+
+    excel.encode().then((onValue) {
+      file
+        ..createSync(recursive: true)
+        ..writeAsBytesSync(onValue);
+    });
+
+    Share.shareFiles([filePath]);
+  }
+
   Future<void> _refresh() async {
     setState(() {
       getReports();
@@ -80,6 +116,17 @@ class _ReportsState extends State<Reports> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.file),
+        actions: [
+          Padding(
+              padding: const EdgeInsets.only(right: 20.0),
+              child: GestureDetector(
+                onTap: ()=>{ createExcel() },
+                child: const Icon(
+                    Icons.ios_share
+                ),
+              )
+          ),
+        ],
       ),
       body: Container(
         padding: const EdgeInsets.all(10),
