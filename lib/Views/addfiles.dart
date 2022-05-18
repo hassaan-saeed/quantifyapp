@@ -67,6 +67,7 @@ class _AddFileState extends State<AddFile> {
           "category" : category,
           "template" : template,
           "count" : count,
+          "date" : DateTime.now()
         })
         .then((value) => {
       showInSnackBar("Record Added")

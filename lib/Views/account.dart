@@ -3,6 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:quantify/Views/editprofile.dart';
+import 'package:quantify/Views/resetpass.dart';
 import 'package:quantify/Views/subaccounts.dart';
 
 import 'login.dart';
@@ -332,18 +333,24 @@ class _AccountInfoState extends State<AccountInfo> {
                                           primary: isDarkMode?Colors.cyan.shade400:Colors.lightBlue.shade700,
                                           shape: RoundedRectangleBorder(
                                               borderRadius: BorderRadius.circular(20))),
-                                      onPressed: () => {},
+                                      onPressed: () => {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => const ResetPass()))
+                                      },
                                       child: Padding(
                                         padding:
                                         EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                                         child: Column(
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: const [
-                                            Icon(Icons.add_card, size: 50,),
+                                            Icon(Icons.lock, size: 50,),
                                             Text(
-                                              "Update Card",
+                                              "Change Password",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                fontSize: 20,
+                                                fontSize: 18,
                                               ),
                                             ),
                                           ],

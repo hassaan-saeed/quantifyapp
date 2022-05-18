@@ -12,7 +12,18 @@ class Graph extends StatefulWidget {
 
 class _GraphState extends State<Graph> {
 
-  List<_GraphData> data = [
+  List<_GraphData> dataMonth = [
+    _GraphData('Wood', 0),
+    _GraphData('Beams', 0),
+    _GraphData('Tubes', 0),
+    _GraphData('Bottles', 0),
+    _GraphData('Layers', 0),
+    _GraphData('Metals', 0),
+    _GraphData('Pharma', 0),
+    _GraphData('Misc', 0)
+  ];
+
+  List<_GraphData> dataWeek = [
     _GraphData('Wood', 0),
     _GraphData('Beams', 0),
     _GraphData('Tubes', 0),
@@ -60,7 +71,17 @@ class _GraphState extends State<Graph> {
         .collection('records')
         .get()
         .then((QuerySnapshot querySnapshot) {
-      data = [
+      dataMonth = [
+        _GraphData('Wood', 0),
+        _GraphData('Beams', 0),
+        _GraphData('Tubes', 0),
+        _GraphData('Bottles', 0),
+        _GraphData('Layers', 0),
+        _GraphData('Metals', 0),
+        _GraphData('Pharma', 0),
+        _GraphData('Misc', 0)
+      ];
+      dataWeek = [
         _GraphData('Wood', 0),
         _GraphData('Beams', 0),
         _GraphData('Tubes', 0),
@@ -81,14 +102,28 @@ class _GraphState extends State<Graph> {
             .then((QuerySnapshot querySnapshot) {
           // reports = [];
           for (var doc in querySnapshot.docs) {
-            for (var d in data) {
-              if (d.category == doc['category']) {
-                d.count += int.parse(doc['count']);
-                print(doc['count']);
-                print(d.count);
+            DateTime date = doc['date'].toDate();
+            print(DateTime.now().difference(date).inDays);
+            if(DateTime.now().difference(date).inDays<7){
+              for (var d in dataWeek) {
+                if (d.category == doc['category']) {
+                  d.count += int.parse(doc['count']);
+                  print(doc['count']);
+                  print(d.count);
+                }
               }
             }
-            print(data);
+            else if(DateTime.now().difference(date).inDays<31){
+              for (var d in dataMonth) {
+                if (d.category == doc['category']) {
+                  d.count += int.parse(doc['count']);
+                  print(doc['count']);
+                  print(d.count);
+                }
+              }
+            }
+
+            print(dataMonth);
           }
         });
       }
@@ -141,7 +176,7 @@ class _GraphState extends State<Graph> {
                           topLeft: Radius.circular(6.0),
                           topRight: Radius.circular(6.0),
                         ),
-                        dataSource: data,
+                        dataSource: dataWeek,
                         xValueMapper: (_GraphData data, _) => data.category,
                         yValueMapper: (_GraphData data, _) => data.count,
                         name: 'Report',
@@ -165,7 +200,7 @@ class _GraphState extends State<Graph> {
                   PieSeries<_GraphData, String>(
                       radius: '90%',
                       explode: true,
-                      dataSource: data,
+                      dataSource: dataMonth,
                       xValueMapper: (_GraphData data, _) => data.category,
                       yValueMapper: (_GraphData data, _) => data.count,
                       name: 'Report',

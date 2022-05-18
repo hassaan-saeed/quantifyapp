@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:quantify/Views/addfiles.dart';
 import 'package:quantify/Views/reports.dart';
@@ -63,6 +64,66 @@ class _FilesState extends State<Files> {
     });
   }
 
+  void showInSnackBar(String value) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.redAccent,
+        duration: const Duration(seconds: 5),
+        content: Text(value)
+    ));
+  }
+
+  deleteFile(String file) async {
+
+    var currentUser = FirebaseAuth.instance.currentUser;
+    var _dataUser ;
+    try{
+      var cond1 = await FirebaseFirestore.instance
+          .collection("subaccounts")
+          .doc(currentUser?.uid)
+          .get();
+      if (cond1.exists) {
+        await FirebaseFirestore.instance
+            .collection('subaccounts')
+            .doc(currentUser?.uid)
+            .get()
+            .then((DocumentSnapshot documentSnapshot) {
+          if (documentSnapshot.exists) {
+            _dataUser = documentSnapshot.get('manager');
+            print('Manager received');
+          }
+        });
+      } else {
+        _dataUser = currentUser?.uid;
+      }
+    }
+    on FirebaseException catch (e){
+      print(e);
+    }
+    catch(e){
+      print(e);
+    }
+
+    await FirebaseFirestore.instance.collection("files").doc(_dataUser).collection('records').doc(file).delete().then((value) => showInSnackBar("File Deleted")).catchError((error) => print("Failed to delete user: $error"));
+    _refresh();
+    Navigator.pop(context);
+
+  }
+
+  createDialog(String file) {
+
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text("Delete?"),
+          content: Text("File: $file"),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, 'No'), child: const Text("No")),
+            TextButton(onPressed: () => {deleteFile(file)}, child: const Text("Yes")),
+          ],
+        ));
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -100,6 +161,7 @@ class _FilesState extends State<Files> {
                                 borderRadius: BorderRadius.circular(10)),
                             tileColor: isDarkMode?Colors.black54:Colors.white,
                             leading: const Icon(Icons.analytics_outlined),
+                            trailing: InkWell(child: const Icon(Icons.delete_forever_outlined, color: Colors.red,), onTap: () => {createDialog(files[index])},),
                             title: Text('${files[index]}',
                               style: const TextStyle(fontSize: 18),),
 

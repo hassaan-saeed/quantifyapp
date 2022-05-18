@@ -74,7 +74,6 @@ class _EditProfileState extends State<EditProfile> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // _image = File('images/image.png');
   }
 
   @override
@@ -143,39 +142,6 @@ class _EditProfileState extends State<EditProfile> {
             ),
 
 
-            // Container(
-            //   width: MediaQuery.of(context).size.width*0.78,
-            //   height: MediaQuery.of(context).size.height*0.08,
-            //   decoration: BoxDecoration(
-            //       borderRadius: BorderRadius.circular(10),
-            //       border: const Border(top: BorderSide(width: 1, color: Colors.black38), bottom: BorderSide(width: 1, color: Colors.black38), right: BorderSide(width: 1, color: Colors.black38), left: BorderSide(width: 1, color: Colors.black38))
-            //   ),
-            //   child: Center(
-            //     child: DropdownButton<String>(
-            //       value: type,
-            //       icon: const Icon(Icons.arrow_downward),
-            //       iconSize: 28,
-            //       elevation: 16,
-            //       style: const TextStyle(color: Colors.black87, fontSize: 22),
-            //       underline: Container(
-            //         height: 1,
-            //         color: Colors.green.shade700,
-            //       ),
-            //       onChanged: (String? newValue) {
-            //         setState(() {
-            //           type = newValue!;
-            //         });
-            //       },
-            //       items: <String>['Select Type','Individual', 'Business']
-            //           .map<DropdownMenuItem<String>>((String value) {
-            //         return DropdownMenuItem<String>(
-            //           value: value,
-            //           child: Text(value),
-            //         );
-            //       }).toList(),
-            //     ),
-            //   ),
-            // ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
