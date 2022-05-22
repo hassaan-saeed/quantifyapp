@@ -3,34 +3,30 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AddFile extends StatefulWidget {
-  const AddFile({Key? key}) : super(key: key);
+  const AddFile(
+      {Key? key,
+      required this.category,
+      required this.template,
+      required this.count})
+      : super(key: key);
+
+  final String category;
+  final String template;
+  final String count;
 
   @override
   State<AddFile> createState() => _AddFileState();
 }
 
 class _AddFileState extends State<AddFile> {
-
-  final _formKey = GlobalKey<FormState>();
   String name = '';
-  String category = '';
-  String template = '';
-  String count = '';
+  int? selectedIndex;
+  List<String> files = [];
 
-  void showInSnackBar(String value) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      behavior: SnackBarBehavior.floating,
-        backgroundColor: value=="Record Added"?Colors.greenAccent:Colors.redAccent,
-        duration: const Duration(seconds: 5),
-        content: Text(value)
-    ));
-  }
-
-  Future<void> addFile() async {
-
+  Future<void> getFiles() async {
     var currentUser = FirebaseAuth.instance.currentUser;
-    var _dataUser ;
-    try{
+    var _dataUser;
+    try {
       var cond1 = await FirebaseFirestore.instance
           .collection("subaccounts")
           .doc(currentUser?.uid)
@@ -49,167 +45,166 @@ class _AddFileState extends State<AddFile> {
       } else {
         _dataUser = currentUser?.uid;
       }
-    }
-    on FirebaseException catch (e){
+    } on FirebaseException catch (e) {
       print(e);
-    }
-    catch(e){
+    } catch (e) {
       print(e);
     }
 
-    await FirebaseFirestore.instance.collection('files').doc(_dataUser).collection('records').doc(name).set(
-        {
-          "name": name
+    await FirebaseFirestore.instance
+        .collection('files')
+        .doc(_dataUser)
+        .collection('records')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      files = [];
+      for (var doc in querySnapshot.docs) {
+        files.add(doc['name']);
+        print(files);
+      }
+    });
+    return Future.value("Files download successfully");
+  }
+
+  void showInSnackBar(String value) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor:
+            value == "Record Added" ? Colors.greenAccent : Colors.redAccent,
+        duration: const Duration(seconds: 5),
+        content: Text(value)));
+  }
+
+  Future<void> addFile() async {
+    var currentUser = FirebaseAuth.instance.currentUser;
+    var _dataUser;
+    try {
+      var cond1 = await FirebaseFirestore.instance
+          .collection("subaccounts")
+          .doc(currentUser?.uid)
+          .get();
+      if (cond1.exists) {
+        await FirebaseFirestore.instance
+            .collection('subaccounts')
+            .doc(currentUser?.uid)
+            .get()
+            .then((DocumentSnapshot documentSnapshot) {
+          if (documentSnapshot.exists) {
+            _dataUser = documentSnapshot.get('manager');
+            print('Manager received');
+          }
         });
-    await FirebaseFirestore.instance.collection('files').doc(_dataUser).collection('records').doc(name).collection('results')
-        .add(
-        {
-          "category" : category,
-          "template" : template,
-          "count" : count,
-          "date" : DateTime.now()
+      } else {
+        _dataUser = currentUser?.uid;
+      }
+    } on FirebaseException catch (e) {
+      print(e);
+    } catch (e) {
+      print(e);
+    }
+
+    await FirebaseFirestore.instance
+        .collection('files')
+        .doc(_dataUser)
+        .collection('records')
+        .doc(name)
+        .set({"name": name});
+    await FirebaseFirestore.instance
+        .collection('files')
+        .doc(_dataUser)
+        .collection('records')
+        .doc(name)
+        .collection('results')
+        .add({
+          "category": widget.category,
+          "template": widget.template,
+          "count": widget.count,
+          "date": DateTime.now()
         })
-        .then((value) => {
-      showInSnackBar("Record Added")
-    }).catchError((error)=> showInSnackBar(error));
+        .then((value) => {showInSnackBar("Record Added")})
+        .catchError((error) => showInSnackBar(error));
     Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
+    var brightness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add a File"),
+        title: const Text("Add to File"),
       ),
-      body: Form(
-        key: _formKey,
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 20, left: 40, right: 40, bottom: 10),
-                  child: TextFormField(
-                    validator: (value){
-                      if(value!.isEmpty){
-                        return 'Please enter a name!';
-                      }
-                      else if(value.length >=21){
-                        return 'Name should at most 20 characters!';
-                      }
-                      else{
-                        return null;
-                      }
-                    },
-                    keyboardType: TextInputType.name,
-                    decoration: const InputDecoration(
-                      labelText: 'Enter File Name',
-                      border: UnderlineInputBorder(),
-                      prefixIcon: Icon(Icons.insert_drive_file),
-                    ),
-                    onChanged: (text) {
-                      name = text;
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 0, left: 40, right: 40, bottom: 10),
-                  child: TextFormField(
-                    validator: (value){
-                      if(value!.isEmpty){
-                        return 'Please enter a category!';
-                      }
-                      else if(value.length >=10){
-                        return 'Name should at most 10 characters!';
-                      }
-                      else{
-                        return null;
-                      }
-                    },
-                    keyboardType: TextInputType.name,
-                    decoration: const InputDecoration(
-                      labelText: 'Enter Category',
-                      border: UnderlineInputBorder(),
-                      prefixIcon: Icon(Icons.category),
-                    ),
-                    onChanged: (text) {
-                      category = text;
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 0, left: 40, right: 40, bottom: 10),
-                  child: TextFormField(
-                    validator: (value){
-                      if(value!.isEmpty){
-                        return 'Please enter a template name!';
-                      }
-                      else if(value.length >=20){
-                        return 'Name should at most 20 characters!';
-                      }
-                      else{
-                        return null;
-                      }
-                    },
-                    keyboardType: TextInputType.name,
-                    decoration: const InputDecoration(
-                      labelText: 'Enter Template Name',
-                      border: UnderlineInputBorder(),
-                      prefixIcon: Icon(Icons.menu),
-                    ),
-                    onChanged: (text) {
-                      template = text;
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 0, left: 40, right: 40, bottom: 30),
-                  child: TextFormField(
-                    validator: (value){
-                      if(value!.isEmpty){
-                        return 'Please enter a count!';
-                      }
-                      else if(value.length >=10){
-                        return 'Name should at most 10 characters!';
-                      }
-                      else{
-                        return null;
-                      }
-                    },
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Enter Count',
-                      border: UnderlineInputBorder(),
-                      prefixIcon: Icon(Icons.numbers),
-                    ),
-                    onChanged: (text) {
-                      count = text;
-                    },
-                  ),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20))),
-                  onPressed: ()=>{
-                    if(_formKey.currentState!.validate()){
-                      addFile()
-                    }
-                  },
-                  child: Container(
-                    width: MediaQuery.of(context).size.width*0.4,
-                    height: MediaQuery.of(context).size.height*0.07,
-                    child: const Center(
-                      child: Text("Create", style: TextStyle(
-                        fontSize: 24,
-                      ),),
-                    ),
-                  ),
-                ),
-              ],
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height*0.7,
+              child: FutureBuilder(
+                future: getFiles(),
+                builder:
+                    (BuildContext context, AsyncSnapshot<void> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      snapshot.hasData) {
+                    return ListView.builder(
+                        itemCount: files.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(6.0),
+                            child: Material(
+                              elevation: 2.0,
+                              child: ListTile(
+                                onTap: () {
+                                  setState(() {
+                                    selectedIndex = index;
+                                    name = files[index];
+                                  });
+                                },
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                tileColor: isDarkMode
+                                    ? selectedIndex == index
+                                        ? Colors.amber
+                                        : Colors.black54
+                                    : selectedIndex == index
+                                        ? Colors.lightBlueAccent
+                                        : Colors.white,
+                                leading: const Icon(Icons.analytics_outlined),
+                                title: Text(
+                                  '${files[index]}',
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ),
+                            ),
+                          );
+                        });
+                  } else {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                },
+              ),
             ),
-          ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20))),
+              onPressed: () => {
+                if (selectedIndex != null) {addFile()}
+              },
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.4,
+                height: MediaQuery.of(context).size.height * 0.07,
+                child: const Center(
+                  child: Text(
+                    "Save",
+                    style: TextStyle(
+                      fontSize: 24,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

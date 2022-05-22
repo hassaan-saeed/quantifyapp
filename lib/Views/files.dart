@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:quantify/Views/addfiles.dart';
 import 'package:quantify/Views/reports.dart';
 
 class Files extends StatefulWidget {
@@ -15,6 +13,8 @@ class Files extends StatefulWidget {
 class _FilesState extends State<Files> {
 
   List<String> files = [];
+  late TextEditingController _controller;
+  var currentUser = FirebaseAuth.instance.currentUser;
 
   Future<void> getFiles() async {
 
@@ -67,7 +67,7 @@ class _FilesState extends State<Files> {
   void showInSnackBar(String value) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.redAccent,
+        backgroundColor: value=="File Created"?Colors.greenAccent:Colors.redAccent,
         duration: const Duration(seconds: 5),
         content: Text(value)
     ));
@@ -124,10 +124,81 @@ class _FilesState extends State<Files> {
         ));
   }
 
+  Future<void> addFile(String name) async {
+    var currentUser = FirebaseAuth.instance.currentUser;
+    var _dataUser;
+    try {
+      var cond1 = await FirebaseFirestore.instance
+          .collection("subaccounts")
+          .doc(currentUser?.uid)
+          .get();
+      if (cond1.exists) {
+        await FirebaseFirestore.instance
+            .collection('subaccounts')
+            .doc(currentUser?.uid)
+            .get()
+            .then((DocumentSnapshot documentSnapshot) {
+          if (documentSnapshot.exists) {
+            _dataUser = documentSnapshot.get('manager');
+            print('Manager received');
+          }
+        });
+      } else {
+        _dataUser = currentUser?.uid;
+      }
+    } on FirebaseException catch (e) {
+      print(e);
+    } catch (e) {
+      print(e);
+    }
+
+    await FirebaseFirestore.instance
+        .collection('files')
+        .doc(_dataUser)
+        .collection('records')
+        .doc(name)
+        .set({"name": name})
+        .then((value) => {showInSnackBar("File Created")})
+        .catchError((error) => showInSnackBar(error));
+    Navigator.pop(context);
+  }
+
+  createDialogAdd() {
+    String name = "";
+
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text("Create File"),
+          content: TextField(
+            controller: _controller,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Enter File Name',
+            ),
+            onChanged: (text) {
+              name = text;
+            },
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, 'Cancel'), child: const Text("Cancel")),
+            TextButton(onPressed: () => {addFile(name)}, child: const Text("Done")),
+          ],
+        ));
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -135,11 +206,11 @@ class _FilesState extends State<Files> {
     var brightness = MediaQuery.of(context).platformBrightness;
     bool isDarkMode = brightness == Brightness.dark;
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => const AddFile())),
-        label: const Text("ADD"),
-
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => {currentUser?.isAnonymous == true?showInSnackBar("Must be Logged In"):createDialogAdd()},
+        child: Icon(Icons.add),
       ),
+
       body: Container(
         padding: const EdgeInsets.all(10),
         child: RefreshIndicator(

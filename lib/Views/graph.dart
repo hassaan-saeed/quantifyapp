@@ -11,34 +11,24 @@ class Graph extends StatefulWidget {
 }
 
 class _GraphState extends State<Graph> {
-
   List<_GraphData> dataMonth = [
-    _GraphData('Wood', 0),
-    _GraphData('Beams', 0),
-    _GraphData('Tubes', 0),
-    _GraphData('Bottles', 0),
-    _GraphData('Layers', 0),
+    _GraphData('Furniture', 0),
     _GraphData('Metals', 0),
-    _GraphData('Pharma', 0),
+    _GraphData('Vehicles', 0),
     _GraphData('Misc', 0)
   ];
 
   List<_GraphData> dataWeek = [
-    _GraphData('Wood', 0),
-    _GraphData('Beams', 0),
-    _GraphData('Tubes', 0),
-    _GraphData('Bottles', 0),
-    _GraphData('Layers', 0),
+    _GraphData('Furniture', 0),
     _GraphData('Metals', 0),
-    _GraphData('Pharma', 0),
+    _GraphData('Vehicles', 0),
     _GraphData('Misc', 0)
   ];
 
   Future<void> getData() async {
-
     var currentUser = FirebaseAuth.instance.currentUser;
-    var _dataUser ;
-    try{
+    var _dataUser;
+    try {
       var cond1 = await FirebaseFirestore.instance
           .collection("subaccounts")
           .doc(currentUser?.uid)
@@ -57,11 +47,9 @@ class _GraphState extends State<Graph> {
       } else {
         _dataUser = currentUser?.uid;
       }
-    }
-    on FirebaseException catch (e){
+    } on FirebaseException catch (e) {
       print(e);
-    }
-    catch(e){
+    } catch (e) {
       print(e);
     }
 
@@ -72,23 +60,16 @@ class _GraphState extends State<Graph> {
         .get()
         .then((QuerySnapshot querySnapshot) {
       dataMonth = [
-        _GraphData('Wood', 0),
-        _GraphData('Beams', 0),
-        _GraphData('Tubes', 0),
-        _GraphData('Bottles', 0),
-        _GraphData('Layers', 0),
+        _GraphData('Furniture', 0),
         _GraphData('Metals', 0),
-        _GraphData('Pharma', 0),
+        _GraphData('Vehicles', 0),
         _GraphData('Misc', 0)
       ];
+
       dataWeek = [
-        _GraphData('Wood', 0),
-        _GraphData('Beams', 0),
-        _GraphData('Tubes', 0),
-        _GraphData('Bottles', 0),
-        _GraphData('Layers', 0),
+        _GraphData('Furniture', 0),
         _GraphData('Metals', 0),
-        _GraphData('Pharma', 0),
+        _GraphData('Vehicles', 0),
         _GraphData('Misc', 0)
       ];
       for (var doc in querySnapshot.docs) {
@@ -104,7 +85,7 @@ class _GraphState extends State<Graph> {
           for (var doc in querySnapshot.docs) {
             DateTime date = doc['date'].toDate();
             print(DateTime.now().difference(date).inDays);
-            if(DateTime.now().difference(date).inDays<7){
+            if (DateTime.now().difference(date).inDays < 7) {
               for (var d in dataWeek) {
                 if (d.category == doc['category']) {
                   d.count += int.parse(doc['count']);
@@ -113,7 +94,7 @@ class _GraphState extends State<Graph> {
                 }
               }
             }
-            else if(DateTime.now().difference(date).inDays<31){
+            if (DateTime.now().difference(date).inDays < 31) {
               for (var d in dataMonth) {
                 if (d.category == doc['category']) {
                   d.count += int.parse(doc['count']);
@@ -123,7 +104,7 @@ class _GraphState extends State<Graph> {
               }
             }
 
-            print(dataMonth);
+            print(dataWeek[0].count.runtimeType);
           }
         });
       }

@@ -1,7 +1,6 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:quantify/Views/templateList.dart';
 import 'option.dart';
-import 'templateList.dart';
 
 class Template extends StatefulWidget {
   const Template({Key? key}) : super(key: key);
@@ -11,13 +10,30 @@ class Template extends StatefulWidget {
 }
 
 class _TemplateState extends State<Template> {
+  int? _selectedIndex;
+  String category = '';
+  String template = '';
 
-  String? selectedValue;
+  final List<_TemplateData> data = [
+    _TemplateData("Chairs", "Furniture", "images/chairs.jpg"),
+    _TemplateData("Cups", "Misc", "images/cups.jpg"),
+    _TemplateData("Tables", "Furniture", "images/tables.jpg"),
+    _TemplateData("Books", "Misc", "images/books.jpg"),
+    _TemplateData("Bottles", "Misc", "images/bottles.jpg"),
+    _TemplateData("Cars", "Vehicles", "images/cars.jpg"),
+  ];
+
+  _onSelected(int index) {
+    setState(() => {
+      _selectedIndex = index,
+      category = data[index].category,
+      template = data[index].tempName
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-
   }
 
   @override
@@ -26,112 +42,86 @@ class _TemplateState extends State<Template> {
     bool isDarkMode = brightness == Brightness.dark;
 
     return Container(
-      child: DefaultTabController(
-        length: 8,
         child: Scaffold(
-          // floatingActionButton: SpeedDial(
-          //
-          //   // visible: TemplateList._selectedIndex != null,
-          //   children: [
-          //     SpeedDialChild(
-          //       child: Icon(Icons.camera_alt),
-          //       label: 'Capture'
-          //     ),
-          //     SpeedDialChild(
-          //         child: Icon(Icons.photo_library_outlined),
-          //         label: 'Library'
-          //     )
-          //   ],
-          // ),
-          floatingActionButton: Visibility(
-            visible: selectedValue!=null,
-            child: FloatingActionButton.extended(
-              onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => Option())),
-              label: Text("Next"),
-
-            ),
-          ),
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            // backgroundColor: Colors.white,
-            elevation: 0,
-            bottom: TabBar(
-              isScrollable: true,
-              labelColor: isDarkMode?Colors.white:Colors.black54,
-              indicatorColor: isDarkMode?Colors.white:Colors.black54,
-              tabs: const [
-                Tab( text: "Wood", ),
-                Tab(text: "Beams",),
-                Tab(text: "Tubes",),
-                Tab(text: "Bottles",),
-                Tab(text: "Layers",),
-                Tab( text: "Metals", ),
-                Tab(text: "Pharma",),
-                Tab(text: "Misc",)
-              ],
-            ),
-            title: const Text('Select a Template:'),
-          ),
-          body: TabBarView(
-            children: [
-              TemplateList(cat: "Wood", onChanged: (value) {
-                setState(() {
-                  selectedValue = value;
-                });
-              }),
-              TemplateList(cat: "Beams",onChanged: (value) {
-                setState(() {
-                  selectedValue = value;
-                });
-              }),
-              TemplateList(cat: "Tubes",onChanged: (value) {
-                setState(() {
-                  selectedValue = value;
-                });
-              }),
-              TemplateList(cat: "Bottles",onChanged: (value) {
-                setState(() {
-                  selectedValue = value;
-                });
-              }),
-              TemplateList(cat: "Layers",onChanged: (value) {
-                setState(() {
-                  selectedValue = value;
-                });
-              }),
-              TemplateList(cat: "Metals",onChanged: (value) {
-                setState(() {
-                  selectedValue = value;
-                });
-              }),
-              TemplateList(cat: "Pharma",onChanged: (value) {
-                setState(() {
-                  selectedValue = value;
-                });
-              }),
-              TemplateList(cat: "Misc",onChanged: (value) {
-                setState(() {
-                  selectedValue = value;
-                });
-              })
-            ],
-          ),
+      floatingActionButton: Visibility(
+        visible: _selectedIndex != null,
+        child: FloatingActionButton.extended(
+          onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => Option(
+                        template: template,
+                        category: category,
+                      ))),
+          label: Text("Next"),
         ),
       ),
-    );
-    // return Container(
-    //   alignment: Alignment.topLeft,
-    //   child: Column(
-    //     children: [
-    //       Padding(
-    //         padding: const EdgeInsets.only(top: 10, left: 20),
-    //         child: Text("Select a Template: ", style: TextStyle(fontSize: 26),),
-    //       ),
-    //
-    //     ],
-    //   ),
-    // );
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        // backgroundColor: Colors.white,
+        elevation: 0,
+
+        title: const Text('Select a Template:'),
+      ),
+      body: Container(
+        color: isDarkMode ? Colors.black54 : Colors.grey.shade200,
+        padding: EdgeInsets.all(10),
+        child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              childAspectRatio: 0.8,
+            ),
+            itemCount: data.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Container(
+                  decoration: BoxDecoration(boxShadow: [
+                    BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        spreadRadius: 3,
+                        blurRadius: 6,
+                        offset: Offset(0.5, 0))
+                  ]),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: GridTile(
+                      footer: GridTileBar(
+                          backgroundColor: _selectedIndex == index
+                              ? Colors.redAccent
+                              : isDarkMode
+                                  ? Colors.black87
+                                  : Colors.white70,
+                          title: Center(
+                              child: AutoSizeText(
+                            data[index].tempName,
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: isDarkMode
+                                    ? Colors.white70
+                                    : Colors.black87),
+                            maxLines: 2,
+                          ))),
+                      child: GestureDetector(
+                        child: Image.asset(
+                          data[index].imagePath,
+                          fit: BoxFit.cover,
+                        ),
+                        onTap: () => _onSelected(index),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+      ),
+    ));
   }
 }
 
-
+class _TemplateData {
+  _TemplateData(this.tempName, this.category, this.imagePath);
+  final String tempName;
+  final String category;
+  final String imagePath;
+}

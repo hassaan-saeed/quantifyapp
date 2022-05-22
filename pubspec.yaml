@@ -74,41 +74,12 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
-    - images/Woods/Logs.jpg
-    - images/Woods/LogsinShape.jpg
-    - images/Woods/Rectangle.jpg
-    - images/Woods/Flat.jpg
-    - images/Woods/Planks.jpg
-    - images/Beams/Channel.jpg
-    - images/Beams/Rebars.jpg
-    - images/Beams/Rebars2.jpeg
-    - images/Beams/Flat.jpg
-    - images/Beams/SquareChannel.jpg
-    - images/Tubes/Metal.jpeg
-    - images/Tubes/Test.jpeg
-    - images/Tubes/Pop.jpg
-    - images/Tubes/Cardboard.jpg
-    - images/Tubes/Nesting.jpg
-    - images/Bottles/Plastic.jpg
-    - images/Bottles/Glass.jpg
-    - images/Bottles/Steel.jpg
-    - images/Bottles/Sports.jpg
-    - images/Bottles/Dispenser.jpg
-    - images/Layers/CurvedLines.png
-    - images/Layers/HorizontalLines.png
-    - images/Layers/DottedLines.png
-    - images/Layers/VerticalLines.png
-    - images/Layers/DiagnolLines.jpg
-    - images/Metals/Wires.jpg
-    - images/Metals/Sheets.jpg
-    - images/Metals/Balls.jpg
-    - images/Metals/Tubes.jpg
-    - images/Metals/Bricks.jpg
-    - images/Pharma/Capsules.jpg
-    - images/Pharma/Tablets1.jpg
-    - images/Pharma/Tablet2.jpg
-    - images/Pharma/Drip.jpg
-    - images/Pharma/Boxes.jpg
+    - images/chairs.jpg
+    - images/cups.jpg
+    - images/tables.jpg
+    - images/books.jpg
+    - images/bottles.jpg
+    - images/cars.jpg
     - images/image.png
     - assets/
     - images/login.png
