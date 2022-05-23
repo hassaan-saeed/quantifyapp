@@ -240,9 +240,7 @@ class _AccountInfoState extends State<AccountInfo> {
                             const SizedBox(
                               height: 50,
                             ),
-                            // if(_type == "Individual" || _type == "Business"){
-                            //   return
-                            // }
+
                             Row(
                               mainAxisAlignment: _type != "Business"?MainAxisAlignment.center:MainAxisAlignment.spaceEvenly,
                               children: [

@@ -59,12 +59,7 @@ class _EditProfileState extends State<EditProfile> {
     } on FirebaseException catch (e) {
       print(e);
     }
-    // Reference firebaseStorageRef = FirebaseStorage.instance.ref().child('profilepics/${FirebaseAuth.instance.currentUser?.uid}');
-    // UploadTask uploadTask = firebaseStorageRef.putFile(_image!);
-    // TaskSnapshot taskSnapshot = await uploadTask.snapshot;
-    // taskSnapshot.ref.getDownloadURL().then(
-    //       (value) => print("Done: $value"),
-    // );
+
     Navigator.pop(context);
   }
 

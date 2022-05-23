@@ -71,11 +71,6 @@ class _LoginState extends State<Login> {
     var brightness = MediaQuery.of(context).platformBrightness;
     bool isDarkMode = brightness == Brightness.dark;
     return Scaffold(
-      // appBar: AppBar(
-      //   automaticallyImplyLeading: false,
-      //   title: Center(child: Text(widget.title!)),
-      // ),
-      // backgroundColor: Colors.green.shade300,
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(

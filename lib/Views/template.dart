@@ -16,11 +16,19 @@ class _TemplateState extends State<Template> {
 
   final List<_TemplateData> data = [
     _TemplateData("Chairs", "Furniture", "images/chairs.jpg"),
+    _TemplateData("Dining-Tables", "Furniture", "images/tables.jpg"),
+    _TemplateData("Beds", "Furniture", "images/beds.jpg"),
     _TemplateData("Cups", "Misc", "images/cups.jpg"),
-    _TemplateData("Tables", "Furniture", "images/tables.jpg"),
     _TemplateData("Books", "Misc", "images/books.jpg"),
     _TemplateData("Bottles", "Misc", "images/bottles.jpg"),
+    _TemplateData("Mouse", "Misc", "images/mouse.jpg"),
+    _TemplateData("Keyboards", "Misc", "images/keyboards.jpg"),
+    _TemplateData("Backpacks", "Misc", "images/backpacks.jpg"),
+    _TemplateData("Laptops", "Misc", "images/laptops.jpg"),
     _TemplateData("Cars", "Vehicles", "images/cars.jpg"),
+    _TemplateData("Motorcycles", "Vehicles", "images/motorcycles.jpg"),
+    _TemplateData("Bicycles", "Vehicles", "images/bicycles.jpg"),
+    _TemplateData("Trucks", "Vehicles", "images/trucks.jpg"),
   ];
 
   _onSelected(int index) {

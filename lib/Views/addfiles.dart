@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:location/location.dart' as loc;
+import 'package:geocoding/geocoding.dart';
 
 class AddFile extends StatefulWidget {
   const AddFile(
@@ -22,6 +24,48 @@ class _AddFileState extends State<AddFile> {
   String name = '';
   int? selectedIndex;
   List<String> files = [];
+
+  loc.Location location = loc.Location();
+  String _address = '';
+
+  late bool _serviceEnabled;
+  late loc.PermissionStatus _permissionGranted;
+  late loc.LocationData _locationData;
+
+  checkLoc() async {
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == loc.PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != loc.PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _locationData = await location.getLocation();
+    GetAddressFromLatLong(_locationData.latitude, _locationData.longitude);
+  }
+
+  Future<void> GetAddressFromLatLong(double? lat, double? lang)async {
+    List<Placemark> placemarks = await placemarkFromCoordinates(lat!, lang!);
+    print(placemarks);
+    Placemark place = placemarks[0];
+    _address = '${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}';
+    print(_address);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkLoc();
+  }
 
   Future<void> getFiles() async {
     var currentUser = FirebaseAuth.instance.currentUser;
@@ -119,7 +163,9 @@ class _AddFileState extends State<AddFile> {
           "category": widget.category,
           "template": widget.template,
           "count": widget.count,
-          "date": DateTime.now()
+          "date": DateTime.now(),
+          "user": currentUser?.email,
+          "loc": _address
         })
         .then((value) => {showInSnackBar("Record Added")})
         .catchError((error) => showInSnackBar(error));
