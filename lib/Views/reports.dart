@@ -66,7 +66,7 @@ class _ReportsState extends State<Reports> {
           "count": doc['count'],
           "date" : doc['date'],
           "user": doc['user'],
-          "loc": doc['loc']
+          // "loc": doc['loc']
         };
         reports.add(obj);
         print(obj);
@@ -90,10 +90,10 @@ class _ReportsState extends State<Reports> {
     excel.rename('Sheet1', widget.file);
     Sheet sheetObject = excel[widget.file];
 
-    sheetObject.merge(CellIndex.indexByString("A1"), CellIndex.indexByString("B2"), customValue: "NAME: ");
-    sheetObject.merge(CellIndex.indexByString("C1"), CellIndex.indexByString("E2"), customValue: FirebaseAuth.instance.currentUser?.email);
-    sheetObject.merge(CellIndex.indexByString("A3"), CellIndex.indexByString("B4"), customValue: "Created On: ");
-    sheetObject.merge(CellIndex.indexByString("C3"), CellIndex.indexByString("E4"), customValue: "${DateTime.now().day} - ${DateTime.now().month} - ${DateTime.now().year}");
+    sheetObject.merge(CellIndex.indexByString("F1"), CellIndex.indexByString("G2"), customValue: "NAME: ");
+    sheetObject.merge(CellIndex.indexByString("H1"), CellIndex.indexByString("J2"), customValue: FirebaseAuth.instance.currentUser?.email);
+    sheetObject.merge(CellIndex.indexByString("F3"), CellIndex.indexByString("G4"), customValue: "Created On: ");
+    sheetObject.merge(CellIndex.indexByString("H3"), CellIndex.indexByString("J4"), customValue: "${DateTime.now().day} - ${DateTime.now().month} - ${DateTime.now().year}");
 
     for(var r in reports){
       List<dynamic> list = [];
@@ -102,7 +102,7 @@ class _ReportsState extends State<Reports> {
       list.add(r['count']);
       list.add(r['date']);
       list.add(r['user']);
-      list.add(r['loc']);
+      // list.add(r['loc']);
       sheetObject.appendRow(list);
     }
 

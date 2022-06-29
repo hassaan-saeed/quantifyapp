@@ -45,8 +45,7 @@ dependencies:
   firebase_storage: ^10.2.9
   excel: ^1.1.5
   share_plus: ^4.0.3
-  location: ^4.4.0
-  geocoding: ^2.0.4
+  syncfusion_flutter_pdf: ^19.1.69-beta
 
 dev_dependencies:
   flutter_test:

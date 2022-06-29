@@ -72,17 +72,17 @@ class _TemplateState extends State<Template> {
         title: const Text('Select a Template:'),
       ),
       body: Container(
-        color: isDarkMode ? Colors.black54 : Colors.grey.shade200,
+        color: isDarkMode ? Colors.black45 : Colors.grey.shade200,
         padding: EdgeInsets.all(10),
         child: GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
+              crossAxisCount: 2,
               childAspectRatio: 0.8,
             ),
             itemCount: data.length,
             itemBuilder: (context, index) {
               return Padding(
-                padding: const EdgeInsets.all(4.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Container(
                   decoration: BoxDecoration(boxShadow: [
                     BoxShadow(

@@ -113,6 +113,7 @@ class _AccountInfoState extends State<AccountInfo> {
 
   Future<void> _refresh() async {
     setState(() {
+      print(MediaQuery.of(context).size.width);
       getData();
     });
   }
@@ -173,69 +174,65 @@ class _AccountInfoState extends State<AccountInfo> {
                       child: Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20),
-                              child: Row(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 65,
-                                    backgroundColor: isDarkMode?Colors.amberAccent:Colors.lightBlueAccent,
-                                    child: ClipOval(
-                                      child: SizedBox.fromSize(
-                                          size: Size.fromRadius(60),
-                                          child: FutureBuilder(
-                                            future: downloadURL(),
-                                            builder: (BuildContext context, AsyncSnapshot<String> snapshot){
-                                              if(snapshot.connectionState == ConnectionState.done && snapshot.hasData){
-                                                return Image.network(snapshot.data!, fit: BoxFit.cover);
-                                              }
-                                              else{
-                                                return Icon(_type!="Sub-Account"?Icons.add_photo_alternate_outlined:Icons.people_alt_outlined,size: 50, color: isDarkMode?Colors.black:Colors.white,);
-                                              }
-                                            },
-                                          ),
-                                          // child: Image.network(_image, fit: BoxFit.cover)
-                                      ),
-                                    )
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          _name,
-                                          style: TextStyle(
-                                              fontSize: _name.length>=10?22:26,
-                                              fontWeight: FontWeight.bold,
-                                          ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                CircleAvatar(
+                                  radius: 65,
+                                  backgroundColor: isDarkMode?Colors.amberAccent:Colors.lightBlueAccent,
+                                  child: ClipOval(
+                                    child: SizedBox.fromSize(
+                                        size: Size.fromRadius(60),
+                                        child: FutureBuilder(
+                                          future: downloadURL(),
+                                          builder: (BuildContext context, AsyncSnapshot<String> snapshot){
+                                            if(snapshot.connectionState == ConnectionState.done && snapshot.hasData){
+                                              return Image.network(snapshot.data!, fit: BoxFit.cover);
+                                            }
+                                            else{
+                                              return Icon(_type!="Sub-Account"?Icons.add_photo_alternate_outlined:Icons.people_alt_outlined,size: 50, color: isDarkMode?Colors.black:Colors.white,);
+                                            }
+                                          },
                                         ),
-                                        const SizedBox(
-                                          height: 16,
-                                        ),
-                                        Text(
-                                          _type,
-                                          style: const TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 6,
-                                        ),
-                                        Text(
-                                          _email,
-                                          style: TextStyle(
-                                              fontSize: _email.length>=25?12:14,
-                                              fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
+                                        // child: Image.network(_image, fit: BoxFit.cover)
                                     ),
                                   )
-                                ],
-                              ),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _name,
+                                      style: TextStyle(
+                                          fontSize: _name.length>=10?22:26,
+                                          fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    Text(
+                                      _type,
+                                      style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 6,
+                                    ),
+                                    Text(
+                                      _email,
+                                      style: TextStyle(
+                                          fontSize: _email.length>=25?12:14,
+                                          fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
                             ),
                             const SizedBox(
                               height: 50,
@@ -265,12 +262,12 @@ class _AccountInfoState extends State<AccountInfo> {
                                             EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                                         child: Column(
                                           mainAxisAlignment: MainAxisAlignment.center,
-                                          children: const [
-                                            Icon(Icons.edit, size: 50,),
+                                          children: [
+                                            Icon(Icons.edit, size: MediaQuery.of(context).size.width>360?50:40,),
                                             Text(
                                               "Edit Profile",
                                               style: TextStyle(
-                                                fontSize: 20,
+                                                fontSize: MediaQuery.of(context).size.width>360?20:16,
                                               ),
                                             ),
                                           ],
@@ -300,13 +297,13 @@ class _AccountInfoState extends State<AccountInfo> {
                                         EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                                         child: Column(
                                           mainAxisAlignment: MainAxisAlignment.center,
-                                          children: const [
-                                            Icon(Icons.people, size: 50,),
+                                          children: [
+                                            Icon(Icons.people, size: MediaQuery.of(context).size.width>360?50:40,),
                                             Text(
                                               "Manage SubAccounts",
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                fontSize: 17,
+                                                fontSize: MediaQuery.of(context).size.width>360?17:15,
                                               ),
                                             ),
                                           ],
@@ -344,13 +341,13 @@ class _AccountInfoState extends State<AccountInfo> {
                                         EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                                         child: Column(
                                           mainAxisAlignment: MainAxisAlignment.center,
-                                          children: const [
-                                            Icon(Icons.lock, size: 50,),
+                                          children: [
+                                            Icon(Icons.lock, size: MediaQuery.of(context).size.width>360?50:40,),
                                             Text(
                                               "Change Password",
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                fontSize: 18,
+                                                fontSize: MediaQuery.of(context).size.width>360?18:15,
                                               ),
                                             ),
                                           ],
@@ -375,13 +372,13 @@ class _AccountInfoState extends State<AccountInfo> {
                                         const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                                         child: Column(
                                           mainAxisAlignment: MainAxisAlignment.center,
-                                          children: const [
-                                            Icon(Icons.attach_money, size: 50,),
+                                          children: [
+                                            Icon(Icons.attach_money, size: MediaQuery.of(context).size.width>360?50:40,),
                                             Text(
                                               "Manage Subscribtion",
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                fontSize: 17,
+                                                fontSize: MediaQuery.of(context).size.width>360?17:15,
                                               ),
                                             ),
                                           ],
